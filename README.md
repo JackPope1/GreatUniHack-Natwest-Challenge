@@ -2,8 +2,7 @@
 
 **GreatUniHack 2026 · NatWest challenge: AI-Powered Financial Inclusion & Resilience**
 
-▶ **Live demo:** https://jackpope1.github.io/GreatUniHack-Natwest-Challenge/ (click **▶ Play guided demo**, then use the → and ← keys)
-🎬 **Demo video:** [your YouTube/Vimeo link]
+▶ **Live demo:** https://jackpope1.github.io/GreatUniHack-Natwest-Challenge/ 
 
 ---
 
