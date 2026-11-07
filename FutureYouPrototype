@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Future You: financial weather forecast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d1530; --muted:#706885; --line:#ece8f3; --soft:#f6f4fa; --bg:#f3f0f8; --card:#fff;
+  --accent:#5b2a9c; --accent-2:#7a3fd1; --accent-soft:#efe8fa;
+  --good:#0f8a5f; --good-soft:#e7f6ef; --storm:#c0264b; --storm-soft:#fdebef; --warn:#a66300; --warn-soft:#fff4dc;
+  --fs:1;
+}
+body.contrast{ --ink:#000; --muted:#2b2b2b; --line:#777; --soft:#fff; --accent:#2c0060; --accent-2:#3d0080; --good:#005c3a; --storm:#8c0024; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);font-size:calc(15px*var(--fs));line-height:1.45;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+a{color:var(--accent-2)}
+:focus-visible{outline:3px solid #f5a524;outline-offset:2px;border-radius:10px}
+.sub{color:var(--muted);font-size:calc(13px*var(--fs))}
+.stage{display:flex;gap:48px;justify-content:center;align-items:flex-start;padding:28px 20px 40px;flex-wrap:wrap}
+
+/* phone */
+.phone{width:400px;max-width:100%;height:840px;background:#fff;border-radius:44px;box-shadow:0 30px 80px -24px rgba(50,20,100,.35),0 0 0 10px #1c1430;position:relative;overflow:hidden;display:flex;flex-direction:column;flex:none}
+@media (max-width:520px){ .stage{padding:0;gap:0} .phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none} .side{padding:24px} }
+.status{height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:12px;font-weight:700;flex:none}
+.top{padding:6px 22px 10px;display:flex;align-items:center;justify-content:space-between;flex:none}
+.hello{font-size:calc(13px*var(--fs));color:var(--muted);font-weight:600}
+.bal{font-size:calc(22px*var(--fs));font-weight:800;letter-spacing:-.01em}
+.gear{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.gear:hover{background:var(--soft)}
+.screen{flex:1;overflow-y:auto;padding:4px 18px 16px;scroll-behavior:smooth}
+.tabs{display:flex;border-top:1px solid var(--line);flex:none;padding:6px 10px 16px;background:#fff}
+.tab{flex:1;padding:8px 4px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:calc(12px*var(--fs));font-weight:600;color:var(--muted)}
+.tab svg{width:22px;height:22px}
+.tab[aria-selected=true]{color:var(--accent)}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:14px;padding:6px 0 4px}
+.msg.me{align-self:flex-end;max-width:82%;background:var(--accent);color:#fff;padding:9px 14px;border-radius:18px 18px 4px 18px;font-size:calc(14.5px*var(--fs))}
+.msg.ai{align-self:stretch;display:flex;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;flex:none;background:linear-gradient(135deg,#5b2a9c,#0f8a5f);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;margin-top:1px}
+.ai .body{flex:1;min-width:0;font-size:calc(14.5px*var(--fs))}
+.ai .body b{color:var(--accent)}
+.ai .why{margin-top:6px;font-size:calc(11.5px*var(--fs));color:var(--muted)}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#a99bc4;margin:8px 2px 0;animation:b 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.composer{flex:none;padding:8px 14px 6px;border-top:1px solid var(--line);background:#fff}
+.replies{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.replies::-webkit-scrollbar{display:none}
+.qr{flex:none;border:1.5px solid var(--accent-soft);color:var(--accent);background:#fff;border-radius:999px;padding:7px 13px;font-size:calc(13px*var(--fs));font-weight:700;white-space:nowrap}
+.qr:hover{background:var(--accent-soft)}
+.inrow{display:flex;gap:8px;align-items:center}
+.inrow input{flex:1;border:0;background:var(--soft);border-radius:999px;padding:12px 16px;font:inherit;font-size:calc(14.5px*var(--fs))}
+.send{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none}
+.aitag{font-size:calc(11px*var(--fs));color:var(--muted);padding:0 4px 6px;display:flex;justify-content:space-between}
+.aitag button{color:var(--accent-2);font-weight:700;font-size:inherit}
+
+/* cards inside chat */
+.cx{margin-top:10px;background:var(--soft);border-radius:18px;padding:14px}
+.cx h4{margin:0;font-size:calc(15px*var(--fs))}
+.big{font-size:calc(26px*var(--fs));font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.cx .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cx-head{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.wxi{font-size:30px;line-height:1}
+.weeks{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin-top:6px;text-align:center}
+.weeks div{font-size:calc(10px*var(--fs));color:var(--muted);line-height:1.2}
+.weeks div span{display:block;font-size:16px}
+.link{color:var(--accent-2);font-weight:700;font-size:calc(13px*var(--fs));margin-top:8px}
+.list{margin:6px 0 0;padding:0;list-style:none}
+.list li{padding:7px 0;border-top:1px solid var(--line);font-size:calc(13.5px*var(--fs))}
+.list li:first-child{border-top:0}
+.fx{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.fx:first-of-type{border-top:0}
+.fx .t{flex:1;min-width:0}
+.fx .t b{display:block;color:var(--ink);font-size:calc(14px*var(--fs))}
+.fx .t span{font-size:calc(12px*var(--fs));color:var(--muted)}
+.add{border-radius:999px;padding:6px 12px;font-weight:800;font-size:calc(12.5px*var(--fs));background:var(--accent);color:#fff;flex:none}
+.add.on{background:var(--good-soft);color:var(--good)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:9px 15px;font-weight:800;font-size:calc(13px*var(--fs));background:var(--accent);color:#fff}
+.btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent-soft)}
+.btn.good{background:var(--good)}
+.vs{display:flex;align-items:baseline;gap:8px}
+.vs s{color:var(--muted);font-size:calc(18px*var(--fs));font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:calc(12.5px*var(--fs));font-weight:600}
+.chip[aria-pressed=true]{border-color:var(--accent);background:var(--accent);color:#fff}
+.bar{height:8px;border-radius:8px;background:#e6e0ef;overflow:hidden;margin:8px 0 4px}.bar span{display:block;height:100%;background:var(--good);border-radius:8px}
+.good{color:var(--good)} .bad{color:var(--storm)}
+.legend{display:flex;gap:12px;font-size:calc(11px*var(--fs));color:var(--muted);margin-top:2px}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+svg[role=img]{display:block;width:100%;height:auto}
+.gear svg{width:22px;height:22px}.send svg{width:18px;height:18px}
+
+/* forecast + plan tabs */
+.h2{font-size:calc(20px*var(--fs));font-weight:800;margin:10px 0 2px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:3px;margin:12px 0 8px}
+.seg button{flex:1;border-radius:9px;padding:8px;font-weight:700;font-size:calc(13px*var(--fs));color:var(--muted)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(60,20,110,.12)}
+.weekrow{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+.wk{border-radius:12px;padding:6px 0;text-align:center;font-size:calc(11px*var(--fs));color:var(--muted);background:var(--soft);border:2px solid transparent}
+.wk span{display:block;font-size:19px;line-height:1.3}
+.wk[aria-pressed=true]{border-color:var(--accent);background:#fff}
+.panel{background:var(--soft);border-radius:18px;padding:14px;margin-top:12px}
+.prow{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow .t{flex:1;min-width:0}.prow .t b{display:block;font-size:calc(14px*var(--fs))}.prow .t span{font-size:calc(12px*var(--fs));color:var(--muted)}
+.tg{width:46px;height:28px;border-radius:28px;background:#d9d2e4;position:relative;flex:none;transition:background .2s}
+.tg::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tg[aria-checked=true]{background:var(--good)} .tg[aria-checked=true]::after{left:21px}
+details{margin-top:12px;background:var(--soft);border-radius:18px;padding:12px 14px}
+details summary{font-weight:700;cursor:pointer;font-size:calc(14px*var(--fs))}
+details ul{margin:8px 0 0;padding-left:18px;font-size:calc(13px*var(--fs))}
+
+/* sheets, toast */
+.sheet-bg{position:absolute;inset:0;background:rgba(20,10,35,.4);display:flex;align-items:flex-end;z-index:20}
+.sheet{background:#fff;width:100%;border-radius:24px 24px 0 0;padding:20px 20px 26px;max-height:86%;overflow:auto}
+.sheet h2{margin:0 0 10px;font-size:calc(18px*var(--fs))}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line);gap:12px}
+.draft{background:var(--soft);border-radius:14px;padding:12px;white-space:pre-wrap;font-size:calc(13.5px*var(--fs));margin:8px 0 12px}
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:#1d1430;color:#fff;border-radius:14px;padding:11px 14px;font-size:13px;font-weight:600;z-index:30;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* side panel */
+.side{width:420px;max-width:100%;flex:none;padding-top:20px}
+.kick{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-2)}
+.side h1{font-size:40px;line-height:1.05;margin:8px 0 10px;letter-spacing:-.02em;color:var(--accent)}
+.side .lead{font-size:16px;color:var(--muted);margin:0 0 16px}
+.persona{display:flex;gap:12px;align-items:center;margin:18px 0}
+.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#f3c9a6,#b8763f);display:grid;place-items:center;font-size:22px;flex:none}
+.side details{background:#fff}
+.side details p,.side details li{font-size:13.5px;color:var(--ink)}
+.small{font-size:12.5px;color:var(--muted)}
+
+/* presenter mode */
+.spot{position:relative;z-index:6;box-shadow:0 0 0 3px #f5a524,0 0 0 9999px rgba(29,20,48,.28)!important;border-radius:18px}
+body.touring .side{width:620px}
+.tourpanel .tstep{font-size:20px;font-weight:800;color:var(--accent-2);margin:16px 0 6px}
+.tourpanel .tstep span{color:var(--muted);font-weight:600}
+.tourpanel .ttitle{font-size:54px;line-height:1.05;letter-spacing:-.02em;margin:0 0 18px;color:var(--accent)}
+.tourpanel .ttext{font-size:26px;line-height:1.45;margin:0 0 26px}
+.tourpanel .ttext b{color:var(--accent-2)}
+.tbar{height:6px;border-radius:6px;background:#e3dbef;overflow:hidden;margin-bottom:18px}.tbar span{display:block;height:100%;background:linear-gradient(90deg,#5b2a9c,#0f8a5f);transition:width .4s}
+.tctl{display:flex;gap:8px;flex-wrap:wrap}
+body.recording .tctl, body.recording .tourpanel .small{display:none}
+body.recording .stage{min-height:100vh;align-items:center;padding:0 40px;gap:80px}
+body.recording .side{width:680px;padding-top:0}
+body.recording .tourpanel .ttitle{font-size:64px}
+body.recording .tourpanel .ttext{font-size:31px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+body.nomotion *{transition:none!important;animation:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="stage">
+  <main class="phone" id="phone" aria-label="Future You app prototype">
+    <div class="status" aria-hidden="true"><span>9:41</span><span>5G ▮</span></div>
+    <header class="top">
+      <div><div class="hello" id="hello"></div><div class="bal" id="bal"></div></div>
+      <button class="gear" data-act="settings" aria-label="Display and language settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </header>
+    <div class="screen" id="screen" tabindex="-1"></div>
+    <div id="composer"></div>
+    <nav class="tabs" role="tablist" aria-label="Sections" id="tabs"></nav>
+    <div id="sheet"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+  <aside class="side" id="side"></aside>
+</div>
+
+<script>
+/* ===================================================================
+   Future You — forecast engine
+   Pure JS, no dependencies. Runs in the browser and in Node (for tests).
+   Pipeline: synthetic history -> analyse() learns patterns ->
+             simulate() Monte Carlo forecast -> findStorms() -> explain
+   =================================================================== */
+
+// ---------- date helpers (day numbers = days since 1970-01-01 UTC) ----------
+const dn = (y, m, d) => Date.UTC(y, m - 1, d) / 864e5;
+function ymd(n) {
+  const t = new Date(n * 864e5);
+  return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), wd: t.getUTCDay() };
+}
+const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DOWL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function fmtDay(n, long) {
+  const a = ymd(n);
+  return long ? `${DOWL[a.wd]} ${a.d} ${MONL[a.m - 1]}` : `${DOW[a.wd]} ${a.d} ${MON[a.m - 1]}`;
+}
+function daysInMonth(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+// half-month bucket 0..23, used for seasonality
+// UC due on a weekend is paid on the Friday before
+const ucPayDate = (y, m, day) => { const d = dn(y, m, day), w = ymd(d).wd; return w === 6 ? d - 1 : w === 0 ? d - 2 : d; };
+const bucket = n => { const a = ymd(n); return (a.m - 1) * 2 + (a.d > 15 ? 1 : 0); };
+
+// ---------- seeded randomness ----------
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gauss(r) { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const r2 = x => Math.round(x * 100) / 100;
+
+// ---------- the persona ----------
+const PERSONA = {
+  name: 'Jane',
+  full: 'Jane Doe, 31',
+  place: 'Manchester',
+  blurb: 'Food-delivery rider on an e-bike and single mum to Leo (6). Gets Universal Credit and Child Benefit. Her income changes every week.',
+  today: dn(2026, 11, 7),
+  balanceToday: 214.37,
+  // What Jane told the app: QuickCash loan has payments until mid-April (from her loan agreement)
+  knownEnds: { 'QUICKCASH LOANS': dn(2027, 4, 16) },
+  // From her UC award statement (user-entered, illustrative figures)
+  uc: { maxAward: 1210, workAllowance: 427, childcareCap: 1071.09, taper: 0.55, payDay: 16, apStartDay: 10 },
+};
+
+const HOLIDAYS = [ // school holidays (illustrative Manchester term dates)
+  [dn(2025, 12, 20), dn(2026, 1, 4)], [dn(2026, 2, 16), dn(2026, 2, 20)], [dn(2026, 3, 30), dn(2026, 4, 10)],
+  [dn(2026, 5, 25), dn(2026, 5, 29)], [dn(2026, 7, 22), dn(2026, 9, 2)], [dn(2026, 10, 26), dn(2026, 10, 30)],
+  [dn(2026, 12, 19), dn(2027, 1, 3)],
+];
+const inHoliday = d => HOLIDAYS.some(([a, b]) => d >= a && d <= b);
+
+// How busy delivery work is by time of year (hidden truth the model must learn)
+function workSeason(d) {
+  const { m, d: day } = ymd(d);
+  if (m === 12) return day <= 21 ? 1.32 : day <= 27 ? 0.35 : 0.85;
+  if (m === 1) return day <= 4 ? 0.85 : 0.64;
+  if (m === 2) return 0.82;
+  if (m === 3) return 0.92;
+  if (m >= 4 && m <= 6) return 0.97;
+  if (m === 7 || m === 8) return 0.84;
+  if (m === 11) return 1.06;
+  return 1.0;
+}
+
+function generateHistory() {
+  const r = mulberry32(20261107);
+  const start = dn(2025, 11, 1), end = PERSONA.today - 1;
+  const tx = [];
+  const add = (d, desc, amt, cat) => { if (d >= start && d <= end) tx.push({ d, desc, amt: r2(amt), cat }); };
+  const u = PERSONA.uc;
+
+  // 1) gig payouts (Wednesdays, for previous week's work). Start a month early for UC.
+  const payouts = [];
+  for (let d = start - 40; d <= end; d++) {
+    if (ymd(d).wd !== 3) continue;
+    let amt = 238 * workSeason(d - 6) * Math.exp(gauss(r) * 0.15);
+    if (r() < 0.045) amt *= 0.3; // ill / bike broken
+    amt = r2(amt);
+    payouts.push({ d, amt });
+    add(d, 'ROOWAY RIDER PAYOUT', amt, 'income');
+  }
+  // 2) Universal Credit on the 16th, based on earnings in the assessment period
+  for (let d = start; d <= end; d++) {
+    const a0 = ymd(d), a = { ...a0 };
+    if (a0.d > 20 || d !== ucPayDate(a0.y, a0.m, u.payDay)) continue;
+    const apEnd = dn(a.y, a.m, u.apStartDay - 1), apStart = dn(a.m === 1 ? a.y - 1 : a.y, a.m === 1 ? 12 : a.m - 1, u.apStartDay);
+    const earn = payouts.filter(p => p.d >= apStart && p.d <= apEnd).reduce((s, p) => s + p.amt, 0);
+    add(d, 'DWP UNIVERSAL CREDIT', Math.max(0, u.maxAward - u.taper * Math.max(0, earn - u.workAllowance)), 'income');
+  }
+  // 3) Child Benefit, every 4 weeks
+  for (let d = dn(2025, 11, 3); d <= end; d += 28) add(d, 'HMRC CHILD BENEFIT', 104.2, 'income');
+
+  // 4) bills + everyday spending
+  for (let d = start; d <= end; d++) {
+    const a = ymd(d), wd = a.wd;
+    if (a.d === 1) add(d, 'OAKWOOD LETTINGS RENT', -725, 'Housing');
+    if (a.d === 1 && !(a.m === 2 || a.m === 3)) add(d, 'CITY COUNCIL CTAX', -118, 'Council tax');
+    if (a.d === 3) add(d, 'RIDESAFE BIKE INSURANCE', -42, 'Work costs');
+    if (a.d === 5) add(d, 'BRIGHTGRID ENERGY', -96, 'Energy');
+    if (a.d === 9) add(d, 'STREAMFLIX', d >= dn(2026, 8, 1) ? -10.99 : -8.99, 'Subscriptions');
+    if (a.d === 12) add(d, 'FIBRELINK BROADBAND', -30, 'Phone & internet');
+    if (a.d === 14) add(d, 'TUNEBOX MUSIC', -11.99, 'Subscriptions');
+    if (a.d === 20) add(d, 'FITLIFE GYM', -24.99, 'Subscriptions');
+    if (a.d === 22) add(d, 'SKYWAVE MOBILE', -38, 'Phone & internet');
+    if (a.d === 25) add(d, 'CLEARPATH CARD PAYMENT', -45, 'Debt');
+    if (wd === 5 && d >= dn(2026, 9, 18)) add(d, 'QUICKCASH LOANS', -32, 'Debt'); // taken out after September overdraft
+
+    const hol = inHoliday(d);
+    const xmas = a.m === 12 && a.d <= 24;
+    if (wd === 1 && !hol) add(d, 'BRIGHTSIDE AFTER SCHOOL CLUB', -45, 'Childcare');
+    if (wd === 1 && hol && !(a.m === 12 || a.m === 1)) add(d, 'KIDZ HOLIDAY CAMP', -85, 'Childcare');
+    if (wd === 6) add(d, 'ALDI', -(47 + gauss(r) * 9) * (xmas && a.d >= 14 ? 1.6 : 1), 'Groceries');
+    if (wd === 2 || wd === 4) add(d, 'TESCO EXPRESS', -Math.max(4, 13 + gauss(r) * 5), 'Groceries');
+    if (wd === 5 && r() < 0.8) add(d, 'JUST EAT', -Math.max(8, 17 + gauss(r) * 5), 'Takeaways');
+    if (wd === 6 && r() < 0.3) add(d, 'JUST EAT', -Math.max(8, 14 + gauss(r) * 4), 'Takeaways');
+    if (wd >= 1 && wd <= 5 && r() < 0.3) add(d, 'BEE NETWORK BUS', -2, 'Transport');
+    if (r() < 0.035) add(d, 'BIKEFIX MANCHESTER', -(20 + r() * 60), 'Work costs');
+    if (r() < 0.24) add(d, ['PRIMARK', 'HOME BARGAINS', 'CARD FACTORY', 'BOOTS'][Math.floor(r() * 4)], -(4 + r() * 21), 'Kids & home');
+    if (wd === 0 && r() < 0.3) add(d, 'CASH ATM', -20, 'Cash');
+    if (xmas && r() < 0.42) add(d, ['ARGOS', 'SMYTHS TOYS', 'AMAZON'][Math.floor(r() * 3)], -(15 + r() * 45), 'Christmas');
+    if (a.m === 8 && a.d === 20) add(d, 'SCHOOL UNIFORM DIRECT', -78, 'Kids & home');
+    if (a.m === 3 && a.d === 14) add(d, 'SMYTHS TOYS', -65, 'Kids & home'); // Leo's birthday
+    if (a.m === 12 && a.d === 3) add(d, 'TV LICENSING', -174.5, 'Bills');
+  }
+  tx.sort((p, q) => p.d - q.d || (q.amt > 0) - (p.amt > 0));
+  const net = tx.reduce((s, t) => s + t.amt, 0);
+  const opening = r2(PERSONA.balanceToday - net);
+  let b = opening;
+  for (const t of tx) { b = r2(b + t.amt); t.bal = b; }
+  return { tx, opening, start };
+}
+
+// ---------- analyse: learn the patterns from history ----------
+const median = a => { const s = [...a].sort((x, y) => x - y); const n = s.length; return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : 0; };
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+const std = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))); };
+
+function analyse(allTx, asOf) {
+  const tx = allTx.filter(t => t.d < asOf);
+  const histStart = tx[0].d;
+  const balanceAt = (() => { let b = null; for (const t of tx) b = t.bal; return b; })();
+
+  // group by merchant
+  const groups = {};
+  for (const t of tx) (groups[t.desc + (t.amt > 0 ? '|in' : '|out')] ||= []).push(t);
+
+  const recurring = [], incomeStreams = [], episodic = [];
+  const recurringDesc = new Set();
+  for (const [key, list] of Object.entries(groups)) {
+    if (list.length < 3) continue;
+    const ds = list.map(t => t.d);
+    const gaps = ds.slice(1).map((d, i) => d - ds[i]);
+    const g = median(gaps);
+    const amts = list.map(t => Math.abs(t.amt));
+    const last3 = amts.slice(-3);
+    const cv = std(last3) / mean(last3);
+    let cadence = null, consistency = 0, anchor = null;
+    if (g >= 6 && g <= 8) { cadence = 'weekly'; consistency = gaps.filter(x => x === 7).length / gaps.length; anchor = ymd(ds[ds.length - 1]).wd; }
+    else if (g >= 27 && g <= 29 && gaps.filter(x => x === 28).length / gaps.length > 0.8) { cadence = '4-weekly'; consistency = gaps.filter(x => x === 28).length / gaps.length; anchor = ds[ds.length - 1]; }
+    else if (g >= 26 && g <= 35) {
+      cadence = 'monthly';
+      const doms = ds.map(d => ymd(d).d); const md = median(doms);
+      consistency = doms.filter(x => Math.abs(x - md) <= 2).length / doms.length; anchor = Math.round(md);
+    }
+    if (cadence === 'weekly' && consistency < 0.7 && !key.endsWith('|in') && std(amts) / mean(amts) < 0.03) {
+      // weekly cost that only happens at certain times of year (e.g. holiday camp)
+      episodic.push({ desc: list[0].desc, cat: list[0].cat, anchor: ymd(ds[ds.length - 1]).wd, amount: amts[amts.length - 1], dates: ds, first: ds[0] });
+      recurringDesc.add(list[0].desc);
+      continue;
+    }
+    if (!cadence || consistency < (cadence === 'weekly' ? 0.7 : 0.55)) continue;
+    const period = cadence === 'weekly' ? 7 : 31;
+    if (asOf - ds[ds.length - 1] > period * 1.5 + 3) continue; // stream no longer active
+    const isIn = key.endsWith('|in');
+    const item = {
+      desc: list[0].desc, cat: list[0].cat, cadence, anchor, consistency,
+      amount: amts[amts.length - 1], variable: cv > 0.08 || std(amts) / mean(amts) > 0.25, count: list.length,
+      first: ds[0], last: ds[ds.length - 1], dates: ds, amounts: amts, isIn,
+    };
+    // price change detection
+    const prev = amts.slice(0, -1).filter(x => Math.abs(x - item.amount) > 0.005);
+    if (!item.variable && prev.length && Math.abs(amts[amts.length - 2] - item.amount) < 0.005 && prev.length < amts.length - 1) {
+      const lastDiff = [...list].reverse().find(t => Math.abs(Math.abs(t.amt) - item.amount) > 0.005);
+      if (lastDiff) item.priceChange = { from: Math.abs(lastDiff.amt), to: item.amount, since: list.find(t => t.d > lastDiff.d).d };
+    }
+    if (isIn) { if (!incomeStreams.length || true) incomeStreams.push(item); }
+    else if (!item.variable) { recurring.push(item); recurringDesc.add(item.desc); }
+  }
+  recurring.sort((a, b) => b.amount - a.amount);
+
+  // gig income: weekly variable credit stream
+  const gig = incomeStreams.find(s => s.cadence === 'weekly' && s.variable);
+  const uc = incomeStreams.find(s => /UNIVERSAL CREDIT/.test(s.desc));
+  const cb = incomeStreams.find(s => s !== gig && s !== uc && !s.variable);
+
+  // seasonality of gig income, half-month buckets
+  const gList = groups[gig.desc + '|in'];
+  const overall = mean(gList.map(t => t.amt));
+  const gBuck = Array.from({ length: 24 }, () => []);
+  for (const t of gList) gBuck[bucket(t.d - 6)].push(t.amt);
+  const gFactor = gBuck.map(a => a.length ? mean(a) / overall : 1);
+  const gResid = gList.map(t => t.amt / (overall * gFactor[bucket(t.d - 6)]));
+  const recent = gList.slice(-8);
+  const gLevel = mean(recent.map(t => t.amt / gFactor[bucket(t.d - 6)]));
+
+  // flexible spending = debits not in fixed recurring streams
+  const flexByDay = new Map();
+  for (const t of tx) if (t.amt < 0 && !recurringDesc.has(t.desc)) flexByDay.set(t.d, (flexByDay.get(t.d) || 0) - t.amt);
+  const flexDay = d => flexByDay.get(d) || 0;
+  // annual one-offs: big payments last year that may come round again
+  const annual = [];
+  for (const [key, list] of Object.entries(groups)) {
+    if (key.endsWith('|in') || recurringDesc.has(list[0].desc)) continue;
+    for (const t of list) if (-t.amt >= 100 && t.d + 365 >= asOf) annual.push({ desc: t.desc, cat: t.cat, d: t.d, amount: -t.amt });
+  }
+  for (const a of annual) recurringDesc.add(a.desc);
+  for (const a of annual) flexByDay.set(a.d, (flexByDay.get(a.d) || 0) - a.amount);
+
+  const fBuck = Array.from({ length: 24 }, () => []);
+  for (let d = histStart; d < asOf; d++) fBuck[bucket(d)].push(flexDay(d));
+  const fOverall = mean(fBuck.flat());
+  const fFactor = fBuck.map(a => a.length >= 7 ? mean(a) / fOverall : 1);
+  // bootstrap pool: last 84 days, by weekday, de-seasonalised
+  const pool = Array.from({ length: 7 }, () => []);
+  for (let d = asOf - 84; d < asOf; d++) pool[ymd(d).wd].push(flexDay(d) / fFactor[bucket(d)]);
+  const flexBase = mean(pool.flat());
+
+  // category totals (last 90 days) for insights
+  const cats = {};
+  for (const t of tx) if (t.amt < 0 && t.d >= asOf - 91) cats[t.cat] = (cats[t.cat] || 0) - t.amt;
+  // takeaway weekly average
+  const takeaway = (cats['Takeaways'] || 0) / 13;
+
+  // Christmas: last year's early-December extra
+  let xmasExtra = 0, xmasLastYear = null;
+  const lyDec = dn(ymd(asOf).y - 1, 12, 1);
+  if (lyDec >= histStart) {
+    const decSpend = []; for (let d = lyDec; d < lyDec + 24; d++) decSpend.push(flexDay(d));
+    const nov = []; for (let d = lyDec - 30; d < lyDec; d++) if (d >= histStart) nov.push(flexDay(d));
+    xmasExtra = decSpend.reduce((s, x) => s + x, 0) - mean(nov) * 24;
+    xmasLastYear = tx.filter(t => t.cat === 'Christmas' && t.d >= lyDec && t.d < lyDec + 24).reduce((s, t) => s - t.amt, 0);
+  }
+
+  // last January low point
+  let janLow = null;
+  const lyJan = dn(ymd(asOf).y, 1, 1);
+  for (const t of tx) if (t.d >= lyJan && t.d < lyJan + 31 && (janLow === null || t.bal < janLow.bal)) janLow = { d: t.d, bal: t.bal };
+
+  return {
+    asOf, balance: balanceAt, histStart, txCount: tx.length, recurring, episodic, annual, gig, uc, cb,
+    gFactor, gResid, gLevel, gOverall: overall, gList,
+    fFactor, pool, flexBase, cats, takeaway, xmasExtra, xmasLastYear, janLow,
+    ucParams: PERSONA.uc, lastUC: uc ? uc.amount : 0,
+  };
+}
+
+// ---------- scenario: fixes the user can switch on ----------
+const FIXES = [
+  { id: 'ctDate', title: 'Move council tax to the 20th', kind: 'Ask', effort: 'One phone call or online form',
+    how: 'Ask your council to take council tax on the 20th, after your Universal Credit lands. Most councils let you choose a payment date, so check which dates yours offers.' },
+  { id: 'ctSpread', title: 'Spread council tax to March', kind: 'Ask', effort: 'One online form',
+    how: 'In England you have the right to pay council tax over 12 months instead of 10. Spreading what is left this year over December to March makes each payment smaller.' },
+  { id: 'rentDate', title: 'Ask to pay rent on the 17th', kind: 'Ask', effort: 'A message to your landlord',
+    how: 'Your rent leaves on the 1st, but your biggest income (Universal Credit) arrives on the 16th. Paying the day after it lands removes the gap. Switching means one part payment for the days in between, which is already in this forecast. Many landlords agree when asked.' },
+  { id: 'xmas', title: 'Set a £200 Christmas limit', kind: 'Choose', effort: 'Set a limit in the app',
+    how: 'Last year Christmas shopping added around £{xmas} in the first three weeks of December. A limit of £200, tracked here, keeps December out of the red.' },
+  { id: 'takeaway', title: 'One fewer takeaway a week', kind: 'Choose', effort: 'Small habit change',
+    how: 'You spend about £{tk} a week on takeaways. Cutting one a week saves about £15, and that adds up fast before payday.' },
+  { id: 'gym', title: 'Pause your gym membership', kind: 'Choose', effort: 'Cancel or freeze online',
+    how: 'FitLife Gym costs £24.99 a month. Many gyms let you freeze for 1 to 3 months, so you keep your place without paying.' },
+  { id: 'childcare', title: 'Claim UC childcare costs', kind: 'Claim', effort: 'Report costs in your UC journal',
+    how: 'You pay {cc} a month for the after-school club, plus holiday camps. Universal Credit pays back 85% of registered childcare costs with your next payment. You report the costs (a receipt or bank statement) each month in your UC journal. Check that the club is Ofsted-registered: most are.' },
+  { id: 'ctr', title: 'Check Council Tax Reduction', kind: 'Claim', effort: '10-minute online check',
+    how: 'People on Universal Credit often qualify for Council Tax Reduction from their council. This is an estimate (a 35% cut) until the council confirms it, which is why it is marked "if approved".', estimate: true },
+];
+
+function buildSchedule(model, scen, start, H) {
+  // Deterministic list of fixed bills per day, with scenario changes applied
+  const sched = Array.from({ length: H }, () => []);
+  const end = start + H - 1;
+  for (const r of model.recurring) {
+    if (scen.gym && /GYM/.test(r.desc)) continue;
+    const isCT = /CTAX/.test(r.desc), isRent = /RENT/.test(r.desc);
+    const occ = [];
+    if (r.cadence === 'weekly') {
+      for (let d = start; d <= end; d++) if (ymd(d).wd === r.anchor) occ.push(d);
+    } else if (r.cadence === '4-weekly') {
+      for (let d = r.anchor + 28; d <= end; d += 28) if (d >= start) occ.push(d);
+    } else {
+      let dom = r.anchor;
+      if (isCT && scen.ctDate) dom = 20;
+      if (isRent && scen.rentDate) dom = 17;
+      const a = ymd(start);
+      for (let k = 0; k < 14; k++) {
+        const y = a.y + Math.floor((a.m - 1 + k) / 12), m = ((a.m - 1 + k) % 12) + 1;
+        const d = dn(y, m, Math.min(dom, daysInMonth(y, m)));
+        const L = ymd(r.last);
+        if (L.y === y && L.m === m) continue; // already paid this month
+        if (d >= start && d <= end) occ.push(d);
+      }
+      if (isRent && scen.rentDate && occ.length) {
+        // switching from the 1st to the 17th: a one-off part payment covers the gap days
+        const f = occ[0], fa = ymd(f), first = dn(fa.y, fa.m, r.anchor);
+        if (first >= start) sched[first - start].push({ desc: r.desc, cat: r.cat, amt: -r2(r.amount * 16 / daysInMonth(fa.y, fa.m)), label: 'Rent (part payment, one-off)' });
+      }
+    }
+    // learned skips: if a year ago the stream existed but nothing was paid near that date, skip (school holidays, council tax Feb/Mar)
+    const tol = r.cadence === 'weekly' ? 3 : 6;
+    let list = occ.filter(d => {
+      const ly = d - 364;
+      if (r.first > ly - tol) return true;
+      if ((isCT && scen.ctDate) || (isRent && scen.rentDate)) { const a = ymd(d); const ly1 = dn(a.y - 1, a.m, r.anchor); return r.dates.some(x => Math.abs(x - ly1) <= tol); }
+      return r.dates.some(x => Math.abs(x - ly) <= tol);
+    });
+    const endD = (PERSONA.knownEnds || {})[r.desc];
+    if (endD) list = list.filter(d => d <= endD);
+    let amount = r.amount;
+    if (isCT) {
+      if (scen.ctSpread) {
+        // remaining instalments to March re-spread over the months left until March
+        const marchEnd = dn(ymd(start).m >= 4 ? ymd(start).y + 1 : ymd(start).y, 3, 31);
+        const remainingNormal = list.length ? r.amount * countCTRemaining(model, r, start, marchEnd) : 0;
+        const months = monthsBetween(start, marchEnd, scen.ctDate ? 20 : r.anchor);
+        amount = remainingNormal / Math.max(1, months.length);
+        list = months.filter(d => d <= end);
+      }
+      if (scen.ctr) amount *= 0.65;
+    }
+    for (const d of list) sched[d - start].push({ desc: r.desc, cat: r.cat, amt: -amount, label: prettyName(r.desc) });
+  }
+  for (const a of model.annual || []) {
+    const d = a.d + 364 + ((ymd(a.d + 364).wd === 0) ? 1 : 0);
+    if (d >= start && d <= end) sched[d - start].push({ desc: a.desc, cat: a.cat, amt: -a.amount, label: prettyName(a.desc), annual: true });
+  }
+  for (const e of model.episodic || []) {
+    for (let d = start; d <= end; d++) {
+      if (ymd(d).wd !== e.anchor) continue;
+      if (e.dates.some(x => Math.abs(x - (d - 364)) <= 3)) sched[d - start].push({ desc: e.desc, cat: e.cat, amt: -e.amount, label: prettyName(e.desc) });
+    }
+  }
+  return sched;
+}
+function countCTRemaining(model, r, start, marchEnd) {
+  let n = 0; const a = ymd(start);
+  for (let k = 0; k < 12; k++) {
+    const y = a.y + Math.floor((a.m - 1 + k) / 12), m = ((a.m - 1 + k) % 12) + 1;
+    const d = dn(y, m, r.anchor);
+    if (d < start || d > marchEnd) continue;
+    const ly = dn(y - 1, m, r.anchor);
+    if (r.first <= ly - 6 && !r.dates.some(x => Math.abs(x - ly) <= 6)) continue;
+    n++;
+  }
+  return n;
+}
+function monthsBetween(start, endD, dom) {
+  const out = []; const a = ymd(start);
+  for (let k = 0; k < 12; k++) {
+    const y = a.y + Math.floor((a.m - 1 + k) / 12), m = ((a.m - 1 + k) % 12) + 1;
+    const d = dn(y, m, Math.min(dom, daysInMonth(y, m)));
+    if (d >= start && d <= endD) out.push(d);
+  }
+  return out;
+}
+function prettyName(desc) {
+  const map = {
+    'OAKWOOD LETTINGS RENT': 'Rent', 'CITY COUNCIL CTAX': 'Council tax', 'RIDESAFE BIKE INSURANCE': 'Bike insurance',
+    'BRIGHTGRID ENERGY': 'Energy', 'TV LICENSING': 'TV Licence', 'STREAMFLIX': 'StreamFlix', 'FIBRELINK BROADBAND': 'Broadband', 'TUNEBOX MUSIC': 'TuneBox',
+    'FITLIFE GYM': 'FitLife Gym', 'SKYWAVE MOBILE': 'Phone contract', 'BRIGHTSIDE AFTER SCHOOL CLUB': 'After-school club',
+    'ROOWAY RIDER PAYOUT': 'Delivery pay', 'CLEARPATH CARD PAYMENT': 'Credit card', 'QUICKCASH LOANS': 'QuickCash loan', 'KIDZ HOLIDAY CAMP': 'Holiday camp', 'DWP UNIVERSAL CREDIT': 'Universal Credit', 'HMRC CHILD BENEFIT': 'Child Benefit',
+  };
+  return map[desc] || desc.charAt(0) + desc.slice(1).toLowerCase();
+}
+
+// ---------- Monte Carlo simulation ----------
+function simulate(model, scen = {}, opts = {}) {
+  const N = opts.runs || 400, H = opts.horizon || 56, start = model.asOf;
+  const extra = opts.extra || null; // {d, amt}
+  const shocks = opts.shocks || [];   // [{kind:'expense', d, amt} | {kind:'income', from, to, factor} | {kind:'rent', from, amt}]
+  const shockOut = new Float64Array(H), gigMul = new Float64Array(H).fill(1);
+  let rentRise = null;
+  for (const sh of shocks) {
+    if (sh.kind === 'expense' && sh.d >= start && sh.d < start + H) shockOut[sh.d - start] += sh.amt;
+    if (sh.kind === 'income') for (let k = Math.max(0, sh.from - start); k < H && start + k <= sh.to; k++) gigMul[k] *= sh.factor;
+    if (sh.kind === 'rent') rentRise = sh;
+  }
+  if (extra && extra.d >= start && extra.d < start + H) shockOut[extra.d - start] += extra.amt;
+  const sched = buildSchedule(model, scen, start, H);
+  // per-day facts, computed once
+  const info = Array.from({ length: H }, (_, k) => {
+    const d = start + k, a = ymd(d);
+    return { d, a, bF: bucket(d), bG: bucket(d - 6), isUC: a.d <= 20 && d === ucPayDate(a.y, a.m, model.ucParams.payDay),
+      rentExtra: rentRise && d >= rentRise.from ? sched[k].filter(e => e.label === 'Rent').length * rentRise.amt : 0 };
+  });
+  // childcare paid each day (for the UC childcare element)
+  const ccDay = sched.map(list => list.filter(e => e.cat === 'Childcare').reduce((t, e) => t - e.amt, 0));
+  const ccAdd = {};
+  if (scen.childcare) for (const I of info) if (I.isUC) {
+    const a = I.a, apEnd = dn(a.y, a.m, model.ucParams.apStartDay - 1), apStart = dn(a.m === 1 ? a.y - 1 : a.y, a.m === 1 ? 12 : a.m - 1, model.ucParams.apStartDay);
+    let c = 0; for (let d = Math.max(apStart, start); d <= apEnd; d++) c += ccDay[d - start] || 0;
+    ccAdd[I.d] = Math.min(model.ucParams.childcareCap, 0.85 * c);
+  }
+  const sh = scen.shield || null; // {weekly, start, target, floor}
+  const shieldArr = sh ? new Float32Array(N * H) : null;
+  let shieldUsedRuns = 0; const shieldEnd = [];
+  const u = model.ucParams;
+  const bal = new Float32Array(N * H);
+  const ucPaid = {}, gigPaid = {};
+  const pastGig = model.gList.map(t => ({ d: t.d, amt: t.amt }));
+  const level = model.gLevel, target = level * mean(model.gFactor);
+  const xmasScale = scen.xmas && model.xmasExtra > 200 ? 200 / model.xmasExtra : 1;
+  const tkCut = scen.takeaway ? 15 / 7 : 0;
+
+  for (let i = 0; i < N; i++) {
+    const r = mulberry32(1000 + i * 7919);
+    let b = model.balance, pot = 0, shield = 0, used = false;
+    const simGig = [];
+    const gU = Math.exp(gauss(r) * 0.07), fU = Math.exp(gauss(r) * 0.08); // uncertainty in what we learned
+    for (let k = 0; k < H; k++) {
+      const I = info[k], d = I.d, a = I.a;
+      let flow = -shockOut[k] - I.rentExtra;
+      for (const e of sched[k]) flow += e.amt;
+      // gig payout on Wednesday
+      if (a.wd === model.gig.anchor) {
+        const res = model.gResid[Math.floor(r() * model.gResid.length)];
+        const amt = level * gU * model.gFactor[I.bG] * res * gigMul[k];
+        simGig.push({ d, amt });
+        (gigPaid[d] ||= []).push(amt);
+        if (scen.steady) {
+          if (amt > target) { pot += amt - target; flow += target; }
+          else { const top = Math.min(pot, target - amt); pot -= top; flow += amt + top; }
+        } else flow += amt;
+      } else r();
+      // Universal Credit
+      if (I.isUC) {
+        const apEnd = dn(a.y, a.m, u.apStartDay - 1), apStart = dn(a.m === 1 ? a.y - 1 : a.y, a.m === 1 ? 12 : a.m - 1, u.apStartDay);
+        let earn = 0;
+        for (const p of pastGig) if (p.d >= apStart && p.d <= apEnd) earn += p.amt;
+        for (const p of simGig) if (p.d >= apStart && p.d <= apEnd) earn += p.amt;
+        const ucAmt = Math.max(0, u.maxAward + (ccAdd[d] || 0) - u.taper * Math.max(0, earn - u.workAllowance));
+        (ucPaid[d] ||= []).push(ucAmt);
+        flow += ucAmt;
+      }
+      // Child Benefit
+      if (model.cb && (d - model.cb.anchor) % 28 === 0 && d > model.cb.anchor) flow += model.cb.amount;
+      // flexible spending: bootstrap a same-weekday day, re-seasonalise
+      const p = model.pool[a.wd];
+      let f = p[Math.floor(r() * p.length)];
+      let fac = model.fFactor[I.bF];
+      if (a.m === 12 && a.d <= 24 && fac > 1) fac = 1 + (fac - 1) * xmasScale;
+      f = Math.max(0, f * fac * fU - tkCut);
+      flow -= f;
+      b += flow;
+      if (scen.steady && b < 0 && pot > 0) { const t = Math.min(pot, -b); pot -= t; b += t; } // pot is a safety net
+      if (sh) {
+        // Storm Shield: save on payday only if the balance stays above a safety floor; cover any dip automatically
+        if (a.wd === model.gig.anchor && d >= sh.start && shield < sh.target) {
+          const t = Math.min(sh.weekly, sh.target - shield);
+          if (b - t >= (sh.floor ?? 150)) { b -= t; shield += t; }
+        }
+        if (b < 0 && shield > 0) { const t = Math.min(shield, -b); shield -= t; b += t; used = true; }
+        shieldArr[i * H + k] = shield;
+      }
+      bal[i * H + k] = b;
+    }
+    if (sh) { if (used) shieldUsedRuns++; shieldEnd.push(shield); }
+  }
+  // summarise
+  const days = [];
+  let anyNeg = 0;
+  const runNeg = new Uint8Array(N), runMin = new Float32Array(N).fill(Infinity), runWin = new Uint8Array(N);
+  const win = opts.window || null; // [fromDay, toDay]: chance of running out inside this window
+  const col = new Float32Array(N), scol = new Float32Array(N);
+  for (let k = 0; k < H; k++) {
+    let neg = 0, low = 0;
+    const inWin = win && start + k >= win[0] && start + k <= win[1];
+    for (let i = 0; i < N; i++) { const v = bal[i * H + k]; col[i] = v; if (v < runMin[i]) runMin[i] = v; if (v < 0) { neg++; runNeg[i] = 1; if (inWin) runWin[i] = 1; } if (v < 75) low++; }
+    col.sort();
+    const q = p => col[Math.min(N - 1, Math.floor(p * N))];
+    const day = { d: start + k, p10: q(0.1), p25: q(0.25), p50: q(0.5), p75: q(0.75), p90: q(0.9), pNeg: neg / N, pLow: low / N, bills: sched[k] };
+    if (shieldArr) { for (let i = 0; i < N; i++) scol[i] = shieldArr[i * H + k]; scol.sort(); day.sh50 = scol[Math.floor(N / 2)]; day.sh10 = scol[Math.floor(N * 0.1)]; }
+    days.push(day);
+  }
+  const mins = Array.from(runMin).sort((x, y) => x - y);
+  for (let i = 0; i < N; i++) anyNeg += runNeg[i];
+  const med = o => { const out = {}; for (const [k, v] of Object.entries(o)) out[k] = median(v); return out; };
+  const res = { days, pAny: anyNeg / N, ucMed: med(ucPaid), gigMed: med(gigPaid), scen, H, start, target,
+    worstMed: mins[Math.floor(N / 2)], worst10: mins[Math.floor(N * 0.1)] };
+  if (sh) { res.shieldUsed = shieldUsedRuns / N; res.shieldEndMed = median(shieldEnd); }
+  if (win) { let c = 0; for (let i = 0; i < N; i++) c += runWin[i]; res.pWin = c / N; const wd = days.filter(x => x.d >= win[0] && x.d <= win[1]); res.lowWin = Math.min(...wd.map(x => x.p50)); res.low10Win = Math.min(...wd.map(x => x.p10)); }
+  res.weather = days.map(weatherOf);
+  res.riskDays = days.filter(x => x.pNeg >= 0.15).length;
+  res.expNeg = days.reduce((s, x) => s + x.pNeg, 0);
+  res.lowMed = Math.min(...days.map(x => x.p50));
+  res.lowDay = days.reduce((m, x) => x.p50 < m.p50 ? x : m, days[0]).d;
+  res.storms = findStorms(res, model);
+  return res;
+}
+
+function weatherOf(x) {
+  if (x.pNeg >= 0.4) return 'storm';
+  if (x.pNeg >= 0.15) return 'rain';
+  if (x.pLow >= 0.4) return 'cloud';
+  return 'sun';
+}
+
+// ---------- storms + explanations ----------
+function findStorms(res, model) {
+  const out = []; let cur = null;
+  res.days.forEach((x, k) => {
+    if (x.pNeg >= 0.15) {
+      if (cur && k - cur.endK <= 6) { cur.endK = k; }
+      else { cur = { startK: k, endK: k }; out.push(cur); }
+    }
+  });
+  return out.map((s, idx) => {
+    const span = res.days.slice(s.startK, s.endK + 1);
+    const peak = span.reduce((m, x) => x.pNeg > m.pNeg ? x : m, span[0]);
+    const lowest = span.reduce((m, x) => x.p50 < m.p50 ? x : m, span[0]);
+    return {
+      id: 's' + idx, start: span[0].d, end: span[span.length - 1].d, peak: peak.d, pPeak: peak.pNeg,
+      lowMed: lowest.p50, lowP10: Math.min(...span.map(x => x.p10)), severity: peak.pNeg >= 0.4 ? 'storm' : 'rain',
+      drivers: explainStorm(res, model, span[0].d, peak.d),
+    };
+  });
+}
+
+function explainStorm(res, model, startD, peakD) {
+  const drivers = [];
+  const from = Math.max(res.start, startD - 10);
+  // big bills in the run-up
+  const bills = [];
+  for (let d = from; d <= peakD; d++) for (const e of res.days[d - res.start].bills) if (-e.amt >= 25) bills.push({ d, label: e.label, amt: -e.amt });
+  const billTotal = bills.reduce((s, b) => s + b.amt, 0);
+  if (bills.length) drivers.push({ type: 'bills', icon: '📤', total: billTotal, items: bills,
+    text: `£${Math.round(billTotal)} of bills leave between ${fmtDay(bills[0].d)} and ${fmtDay(bills[bills.length - 1].d)}`, });
+  // timing gap to next big income
+  const ucDays = Object.keys(res.ucMed).map(Number).filter(d => d >= peakD).sort((a, b) => a - b);
+  if (ucDays.length) {
+    const nd = ucDays[0];
+    drivers.push({ type: 'timing', icon: '⏳', d: nd, amt: res.ucMed[nd],
+      text: `Your Universal Credit (about £${Math.round(res.ucMed[nd])}) doesn't arrive until ${fmtDay(nd)}${nd - peakD > 1 ? `, ${nd - peakD} days later` : ''}` });
+  }
+  // lower UC in window
+  for (const [dS, v] of Object.entries(res.ucMed)) {
+    const d = +dS;
+    if (d >= from - 20 && d <= peakD + 3 && v < model.lastUC - 60) {
+      drivers.push({ type: 'uc', icon: '🏛️', amt: model.lastUC - v,
+        text: `Universal Credit likely about £${Math.round(model.lastUC - v)} lower on ${fmtDay(d)}. You usually earn more from mid-November to early December, and UC goes down when your earnings go up` });
+    }
+  }
+  // christmas spending
+  let xmas = 0;
+  for (let d = from; d <= peakD; d++) { const a = ymd(d); const f = model.fFactor[bucket(d)]; if (a.m === 12 && a.d <= 24 && f > 1) xmas += model.flexBase * (f - 1) * (res.scen.xmas && model.xmasExtra > 200 ? 200 / model.xmasExtra : 1); }
+  if (xmas > 60) drivers.push({ type: 'xmas', icon: '🎁', amt: xmas,
+    text: `Christmas shopping: last December you spent about £${Math.round(model.xmasLastYear || xmas)} on gifts in the first three weeks` });
+  // slow gig weeks
+  const gigs = Object.entries(res.gigMed).filter(([d]) => +d >= from && +d <= peakD + 3).map(([, v]) => v);
+  const typical = model.gLevel * mean(model.gFactor);
+  if (gigs.length && mean(gigs) < typical * 0.85 && !res.scen.steady) drivers.push({ type: 'gig', icon: '🚲', amt: typical - mean(gigs),
+    text: `Delivery pay is usually about ${Math.round((1 - mean(gigs) / typical) * 100)}% lower around now. Last year it dropped after Christmas` });
+  return drivers;
+}
+
+// impact of each fix alone
+function fixImpacts(model, base, opts) {
+  const out = {};
+  for (const f of FIXES) {
+    const r = simulate(model, { [f.id]: true }, opts);
+    out[f.id] = { dAny: base.pAny - r.pAny, dRisk: base.riskDays - r.riskDays, dLow: r.lowMed - base.lowMed, dExp: base.expNeg - r.expNeg };
+  }
+  return out;
+}
+
+// "can I afford X on day D?" — compares futures with and without the purchase
+function affordCheck(model, scen, opts, amt, d) {
+  const base = simulate(model, scen, opts);
+  const withIt = simulate(model, scen, { ...opts, extra: { d, amt } });
+  // which storm gets worse the most?
+  let worst = null;
+  for (const st of withIt.storms.concat(base.storms)) {
+    const win = k => k.days.filter(x => x.d >= st.start && x.d <= st.end);
+    const pb = Math.max(0, ...win(base).map(x => x.pNeg)), pw = Math.max(0, ...win(withIt).map(x => x.pNeg));
+    if (st.end >= d && (!worst || pw - pb > worst.delta)) worst = { st, pb, pw, delta: pw - pb };
+  }
+  const dExp = withIt.expNeg - base.expNeg;
+  // is there a better day in the next three weeks?
+  let best = null;
+  if (dExp > 0.3) {
+    for (let k = 1; k <= 21; k++) {
+      const dd = d + k; if (dd >= model.asOf + (opts.horizon || 56)) break;
+      const r = simulate(model, scen, { ...opts, runs: 200, extra: { d: dd, amt } });
+      const de = r.expNeg - base.expNeg;
+      if (!best || de < best.dExp - 0.2) best = { d: dd, dExp: de };
+    }
+    if (best && best.dExp > dExp - 0.3) best = null;
+  }
+  return { base, withIt, dExp, worst, best };
+}
+
+// ---------- shocks: life's unexpected events ----------
+const SHOCKS = [
+  { id: 'bike', icon: '🚲', title: 'My e-bike breaks', what: 'A £180 repair, and about half a week of deliveries lost', type: 'expense',
+    build: d => [{ kind: 'expense', d, amt: 180 }, { kind: 'income', from: d, to: d + 7, factor: 0.5 }] },
+  { id: 'ill', icon: '🤒', title: "I'm ill for a week", what: 'No delivery pay for a week. Self-employed riders get no sick pay', type: 'income',
+    build: d => [{ kind: 'income', from: d + 1, to: d + 7, factor: 0 }] },
+  { id: 'washer', icon: '🧺', title: 'Washing machine breaks', what: 'A £320 replacement', type: 'expense',
+    build: d => [{ kind: 'expense', d, amt: 320 }] },
+  { id: 'ratecut', icon: '📉', title: 'Delivery app cuts pay', what: 'Pay per order drops 15% from then on', type: 'income',
+    build: d => [{ kind: 'income', from: d, to: d + 9999, factor: 0.85 }] },
+  { id: 'rent', icon: '🏠', title: 'Rent goes up £50', what: 'A £50 a month rent rise from then on', type: 'bill',
+    build: d => [{ kind: 'rent', from: d, amt: 50 }] },
+];
+function shockTest(model, scen, shockId, d, opts = {}) {
+  const sk = SHOCKS.find(x => x.id === shockId);
+  const H = opts.horizon || 364, w = [d, Math.min(model.asOf + H - 1, d + (opts.weeks || 8) * 7)];
+  const o = { horizon: H, runs: opts.runs || 300, window: w };
+  const before = simulate(model, scen, o);
+  const after = simulate(model, scen, { ...o, shocks: sk.build(d) });
+  // UC reacts to lower earnings: extra UC in the following payments
+  let ucUp = 0; for (const [k, v] of Object.entries(after.ucMed)) { const dd = +k; if (dd >= d && dd <= w[1] + 35) ucUp += v - (before.ucMed[dd] || 0); }
+  const shieldAt = scen.shield ? before.days[d - model.asOf]?.sh50 ?? 0 : null;
+  const cost = sk.build(d).reduce((t, x) => t + (x.kind === 'expense' ? x.amt : 0), 0);
+  return { shock: sk, d, window: w, before, after, ucUp, shieldAt, cost,
+    pBefore: before.pWin, pAfter: after.pWin, lowBefore: before.lowWin, lowAfter: after.lowWin, shieldUsedAfter: after.shieldUsed };
+}
+
+// ---------- Storm Shield: a ring-fenced emergency buffer ----------
+function shieldSuggest(model, scen) {
+  // start after the last storm in the next 12 weeks under this plan (or the next payday)
+  const r12 = simulate(model, scen, { horizon: 84, runs: 300 });
+  let startD = model.asOf; while (ymd(startD).wd !== model.gig.anchor) startD++;
+  if (r12.storms.length) { startD = r12.storms[r12.storms.length - 1].end + 1; while (ymd(startD).wd !== model.gig.anchor) startD++; }
+  // spare money per week after that, smoothed over whole months
+  const r = simulate(model, scen, { horizon: 364, runs: 300 });
+  const avg = (a, b) => mean(r.days.filter(x => x.d >= a && x.d < b).map(x => x.p50));
+  const k0 = startD, k1 = Math.min(model.asOf + 363 - 28, startD + 182);
+  const perWeek = (avg(k1, k1 + 28) - avg(k0, k0 + 28)) / ((k1 - k0) / 7);
+  const weekly = Math.max(5, Math.min(30, Math.floor((perWeek * 0.5) / 5) * 5));
+  return { start: startD, weekly, perWeek, target: 300 };
+}
+
+// backtest: forecast from a past date, compare with what actually happened
+function backtest(hist, asOf, H = 28) {
+  const m = analyse(hist.tx, asOf);
+  const r = simulate(m, {}, { horizon: H, runs: 300 });
+  const actual = [];
+  let b = m.balance;
+  for (let k = 0; k < H; k++) { const d = asOf + k; for (const t of hist.tx) if (t.d === d) b = t.bal; actual.push(b); }
+  let inBand = 0, err = 0;
+  r.days.forEach((x, k) => { if (actual[k] >= x.p10 && actual[k] <= x.p90) inBand++; err += Math.abs(actual[k] - x.p50); });
+  return { asOf, H, coverage: inBand / H, mae: err / H, res: r, actual };
+}
+
+const ENGINE = { dn, ymd, fmtDay, DOW, MON, MONL, PERSONA, FIXES, SHOCKS, shockTest, shieldSuggest, generateHistory, analyse, simulate, fixImpacts, affordCheck, backtest, prettyName, median, mean };
+if (typeof module !== 'undefined') module.exports = ENGINE;
+
+</script>
+<script>
+(function(){
+const E = ENGINE, P = E.PERSONA, $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = (x, pence) => { const v = pence ? Math.abs(x).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}) : Math.abs(Math.round(x)).toLocaleString('en-GB'); return (x < -0.004 ? '−' : '') + '£' + v; };
+const pct = p => Math.round(p * 100) + '%';
+const WXE = { sun:'☀️', cloud:'⛅', rain:'🌧️', storm:'⛈️' };
+const WXW = { sun:'clear', cloud:'tight', rain:'risky', storm:'storm' };
+const RANK = { sun:0, cloud:1, rain:2, storm:3 };
+const iso = d => { const a = E.ymd(d); return `${a.y}-${String(a.m).padStart(2,'0')}-${String(a.d).padStart(2,'0')}`; };
+const fromIso = s => { const m = String(s).match(/(\d{4})-(\d{2})-(\d{2})/); return m ? E.dn(+m[1], +m[2], +m[3]) : null; };
+const short = d => { const a = E.ymd(d); return `${a.d} ${E.MON[a.m-1]}`; };
+
+// ---------- model ----------
+const HIST = E.generateHistory();
+const M = E.analyse(HIST.tx, P.today);
+const BT = E.backtest(HIST, E.dn(2026, 10, 7), 28);
+const S = { tab:'coach', plan:new Set(), chat:[], replies:[], busy:false, simple:true, size:1, contrast:false, motion:true, speak:false,
+  fview:'today', selWeek:null, sheet:null, live:true, shieldOn:false, shieldWeekly:null, shieldTarget:300, tour:null, instant:false };
+const H = 84;
+const cache = new Map();
+const keyOf = (scen, h, extra) => JSON.stringify(Object.entries(scen).filter(([, v]) => v).sort()) + '|' + h + '|' + (extra || '');
+function sim(scen, h = H){ const k = keyOf(scen, h); if (!cache.has(k)) cache.set(k, E.simulate(M, scen, { horizon:h, runs:h > 100 ? 300 : 400 })); return cache.get(k); }
+const planScen = () => Object.fromEntries([...S.plan].map(k => [k, true]));
+const base = () => sim({});
+const planned = () => sim(planScen());
+function impacts(){ const b = base(), out = {}; for (const f of E.FIXES){ const r = sim({ [f.id]:true }); out[f.id] = { dExp:b.expNeg - r.expNeg, dAny:b.pAny - r.pAny }; } return out; }
+const ranked = () => { const imp = impacts(); return E.FIXES.slice().sort((a, z) => imp[z.id].dExp - imp[a.id].dExp); };
+const topFixes = n => ranked().slice(0, n).map(f => f.id);
+const fixById = id => E.FIXES.find(f => f.id === id);
+const fixText = f => f.how.replace('{xmas}', Math.round(M.xmasLastYear || M.xmasExtra)).replace('{tk}', Math.round(M.takeaway)).replace('{cc}', money(45 * 52 / 12));
+function shieldSug(){ const k = 'sug' + keyOf(planScen(), 0); if (!cache.has(k)) cache.set(k, E.shieldSuggest(M, planScen())); return cache.get(k); }
+function shieldCfg(){ const sg = shieldSug(); return { weekly:S.shieldWeekly || sg.weekly, start:sg.start, target:S.shieldTarget, floor:150 }; }
+function resScen(){ const s = planScen(); if (S.shieldOn) s.shield = shieldCfg(); return s; }
+const year = scen => sim(scen, 364);
+function shockRes(scen, id, when){ const k = keyOf(scen, 364, id + when); if (!cache.has(k)) cache.set(k, E.shockTest(M, scen, id, WHEN[when].d, { runs:300 })); return cache.get(k); }
+const WHEN = { next:{ l:'next week', d:P.today + 7 }, dec:{ l:'in early December', d:E.dn(2026, 12, 7) }, feb:{ l:'in February', d:E.dn(2027, 2, 8) }, may:{ l:'in May', d:E.dn(2027, 5, 10) } };
+const monthsRed = r => { const mm = {}; r.days.forEach(x => { const a = E.ymd(x.d), k = a.y * 12 + a.m; mm[k] = Math.max(mm[k] || 0, x.pNeg); }); return Object.values(mm).filter(v => v >= 0.5).length; };
+const topStorm = r => r.storms.slice().sort((p, q) => q.pPeak - p.pPeak)[0];
+function weeks(r){ return Array.from({ length:12 }, (_, k) => { const ds = r.days.slice(k * 7, k * 7 + 7); const w = ds.map((_, j) => r.weather[k * 7 + j]).reduce((a, b) => RANK[b] > RANK[a] ? b : a, 'sun'); return { k, start:ds[0].d, days:ds, w }; }); }
+function chanceWords(p){ if (p >= 0.95) return 'almost certain'; if (p < 0.05) return 'very unlikely'; return `about ${Math.max(1, Math.round(p * 10))} in 10`; }
+const chance = p => S.simple ? chanceWords(p) : pct(p);
+const DRAFTS = {
+  rentDate: `Hi,\n\nI get Universal Credit on the 16th of each month, but my rent goes out on the 1st, so money is very tight at the start of the month.\n\nCould we move my rent date to the 17th from December? I'll pay a part payment on 1 December to cover the days in between, so you won't be short. This will help make sure my rent is always paid on time.\n\nThanks,\nJane Doe`,
+  ctDate: `Hello,\n\nI'd like to change my council tax Direct Debit date to the 20th of each month from December, please.\n\nAccount reference: [your reference]\n\nThank you,\nJane Doe`,
+  ctSpread: `Hello,\n\nPlease could I pay the rest of this year's council tax in monthly instalments up to March (12 instalments instead of 10), starting in December?\n\nAccount reference: [your reference]\n\nThank you,\nJane Doe`,
+  gym: `Hi,\n\nI'd like to freeze my membership for two months from December. Could you tell me how to do that, and confirm I won't be charged while it's frozen?\n\nThanks,\nJane`,
+};
+const SHORT = { xmas:'Keep Christmas to £200', childcare:'Claim back childcare costs', rentDate:'Pay rent on the 17th', ctDate:'Council tax on the 20th', ctSpread:'Spread council tax to March', takeaway:'One fewer takeaway a week', gym:'Freeze the gym', ctr:'Check Council Tax Reduction' };
+
+// ---------- charts ----------
+function lineChart(a, b, opt = {}){
+  const W = 360, Hh = opt.h || 150, L = 40, R = 6, T = 8, B = 20;
+  const sets = [a].concat(b ? [b] : []);
+  let lo = Math.min(-100, ...sets.flatMap(r => r.days.map(x => x.p10))), hi = Math.max(300, ...sets.flatMap(r => r.days.map(x => x.p90)));
+  const n = a.days.length, X = k => L + (W - L - R) * k / (n - 1), Y = v => T + (Hh - T - B) * (hi - v) / (hi - lo);
+  const path = (r, key) => 'M' + r.days.map((x, k) => `${X(k).toFixed(1)},${Y(x[key]).toFixed(1)}`).join('L');
+  const band = r => 'M' + r.days.map((x, k) => `${X(k).toFixed(1)},${Y(x.p10).toFixed(1)}`).join('L') + 'L' + r.days.map((x, k) => [k, x]).reverse().map(([k, x]) => `${X(k).toFixed(1)},${Y(x.p90).toFixed(1)}`).join('L') + 'Z';
+  const main = b || a;
+  let ticks = ''; a.days.forEach((x, k) => { const q = E.ymd(x.d); if (q.d === 1) ticks += `<text x="${X(k)+3}" y="${Hh-5}" font-size="10" fill="#8a80a0" font-weight="700">${E.MON[q.m-1]}</text>`; });
+  const yl = [0, Math.floor(hi / 500) * 500].filter((v, i, s) => s.indexOf(v) === i && v <= hi).map(v => `<text x="${L-6}" y="${Y(v)+3}" font-size="10" text-anchor="end" fill="#8a80a0">${money(v)}</text>`).join('');
+  const color = b ? '#0f8a5f' : '#5b2a9c';
+  const label = `Expected balance over the next ${Math.round(n / 7)} weeks. ` + (b ? `Lowest point moves from ${money(a.lowMed)} to ${money(b.lowMed)}.` : `Lowest point about ${money(a.lowMed)} around ${E.fmtDay(a.lowDay)}.`);
+  return `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(label)}" ${opt.id ? `id="${opt.id}"` : ''}>
+    ${yl}${ticks}
+    <path d="${band(main)}" fill="${b ? '#cdeee0' : '#e7dcf6'}"/>
+    <line x1="${L}" x2="${W-R}" y1="${Y(0)}" y2="${Y(0)}" stroke="#c0264b" stroke-width="1.2" stroke-dasharray="4 3"/>
+    ${b ? `<path d="${path(a, 'p50')}" fill="none" stroke="#a79cbd" stroke-width="1.5" stroke-dasharray="4 3"/>` : ''}
+    <path d="${path(main, 'p50')}" fill="none" stroke="${color}" stroke-width="2.4"/>
+    ${opt.mark ? `<line x1="${X(opt.mark - a.start)}" x2="${X(opt.mark - a.start)}" y1="${T}" y2="${Hh-B}" stroke="#d4561b" stroke-width="1.4"/>` : ''}
+  </svg>`;
+}
+function yearChart(y0, y1){
+  const W = 360, Hh = 140, L = 40, R = 6, T = 8, B = 20;
+  const pick = r => r.days.filter((x, k) => k % 2 === 0);
+  const a = pick(y0), b = y1 ? pick(y1) : null;
+  let lo = Math.min(-200, ...a.map(x => x.p50)), hi = Math.max(500, ...a.map(x => x.p50), ...(b ? b.map(x => x.p50 + (x.sh50 || 0)) : []));
+  const n = a.length, X = k => L + (W - L - R) * k / (n - 1), Y = v => T + (Hh - T - B) * (hi - v) / (hi - lo);
+  const line = (arr, f) => 'M' + arr.map((x, k) => `${X(k).toFixed(1)},${Y(f(x)).toFixed(1)}`).join('L');
+  let ticks = ''; a.forEach((x, k) => { const q = E.ymd(x.d); if (q.d <= 2 && q.m % 3 === 1) ticks += `<text x="${X(k)+2}" y="${Hh-5}" font-size="10" fill="#8a80a0" font-weight="700">${E.MON[q.m-1]}</text>`; });
+  const yl = [0, Math.floor(hi / 1000) * 1000].filter((v, i, s) => s.indexOf(v) === i && v > lo).map(v => `<text x="${L-6}" y="${Y(v)+3}" font-size="10" text-anchor="end" fill="#8a80a0">${money(v)}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Most likely balance over 12 months${b ? ', with and without the plan' : ''}.">${yl}${ticks}
+    <line x1="${L}" x2="${W-R}" y1="${Y(0)}" y2="${Y(0)}" stroke="#c0264b" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <path d="${line(a, x => x.p50)}" fill="none" stroke="#a79cbd" stroke-width="1.5" ${b ? 'stroke-dasharray="4 3"' : ''}/>
+    ${b ? `<path d="${line(b, x => x.p50)}" fill="none" stroke="#0f8a5f" stroke-width="2.4"/>` : ''}</svg>`;
+}
+
+// ---------- coach: messages + cards ----------
+let mid = 0;
+function say(html, cards = [], replies = null, why = null){
+  const m = { id:'m' + (++mid), who:'ai', html, cards, why };
+  S.chat.push(m); if (replies) S.replies = replies; return m;
+}
+function me(text){ S.chat.push({ id:'m' + (++mid), who:'me', html:esc(text), text }); }
+const DEFAULT_REPLIES = ['Why?', 'What can I do?', 'Can I afford something?', 'What if something goes wrong?'];
+
+function card(c){
+  const t = c.type;
+  if (t === 'forecast') {
+    const r = sim(c.scen || {}), st = topStorm(r), wk = weeks(r);
+    const head = st ? `<div class="cx-head"><span class="wxi" aria-hidden="true">${WXE[st.severity]}</span><div><h4>${st.severity === 'storm' ? 'Storm' : 'Risky spell'} around ${E.fmtDay(st.peak)}</h4><div class="sub">${S.simple ? `Chance of running short: ${chanceWords(st.pPeak)}` : `${pct(st.pPeak)} chance of running short`} · could be about ${money(Math.max(0, -st.lowMed))} short</div></div></div>`
+      : `<div class="cx-head"><span class="wxi" aria-hidden="true">☀️</span><div><h4>Clear for the next 12 weeks</h4><div class="sub">Chance of running short: ${chance(r.pAny)}</div></div></div>`;
+    return `<div class="cx" data-type="forecast">${head}${lineChart(base(), c.scen && Object.keys(c.scen).length ? r : null, { h:120 })}
+      <div class="weeks" aria-label="Weekly money weather">${wk.map(w => `<div><span aria-label="${WXW[w.w]}">${WXE[w.w]}</span>${E.ymd(w.start).d}/${E.ymd(w.start).m}</div>`).join('')}</div>
+      <button class="link" data-act="tab" data-v="forecast">Open the full forecast →</button></div>`;
+  }
+  if (t === 'why') {
+    const st = topStorm(base());
+    return `<div class="cx" data-type="why"><h4>Why ${E.fmtDay(st.peak)} looks stormy</h4><ul class="list">${st.drivers.map(d => `<li>${esc(d.text)}.</li>`).join('')}</ul></div>`;
+  }
+  if (t === 'fixes') {
+    const ids = c.ids || topFixes(3), imp = impacts(), b = base(), p = planned();
+    return `<div class="cx" data-type="fixes">${ids.map(id => { const f = fixById(id), on = S.plan.has(id), d = Math.round(imp[id].dExp);
+      return `<div class="fx"><div class="t"><b>${esc(SHORT[id] || f.title)}</b><span>${d >= 1 ? `Removes about ${d} risky day${d > 1 ? 's' : ''}` : 'Helps a little'} · ${esc(f.effort.toLowerCase())}${DRAFTS[id] ? ` · <button class="link" style="margin:0" data-act="draft" data-v="${id}">write it for me</button>` : ''}${f.estimate ? ' · estimate' : ''}</span></div>
+      <button class="add ${on ? 'on' : ''}" data-act="fix" data-v="${id}" aria-pressed="${on}" aria-label="${on ? 'Remove' : 'Add'} ${esc(f.title)}">${on ? '✓ Added' : 'Add'}</button></div>`; }).join('')}
+      ${S.plan.size ? `<div class="sub" style="margin-top:8px">With your plan: chance of running short <b class="good">${pct(b.pAny)} → ${pct(p.pAny)}</b></div>` : ''}</div>`;
+  }
+  if (t === 'impact') {
+    const b = base(), p = sim(c.scen);
+    return `<div class="cx" data-type="impact"><div class="sub">Chance of running short in the next 12 weeks</div>
+      <div class="vs"><s>${pct(b.pAny)}</s><span class="big good">${pct(p.pAny)}</span></div>
+      ${lineChart(b, p, { h:110 })}<div class="legend"><span><i style="background:#a79cbd"></i>Before</span><span><i style="background:#0f8a5f"></i>With your plan</span></div></div>`;
+  }
+  if (t === 'shockpick') {
+    return `<div class="cx" data-type="shockpick"><div class="chips">${E.SHOCKS.map(x => `<button class="chip" data-act="shock" data-v="${x.id}">${x.icon} ${esc(x.title)}</button>`).join('')}</div>
+      <div class="sub" style="margin-top:8px">I'll test it ${WHEN.next.l}. You can also say when, for example “in February”.</div></div>`;
+  }
+  if (t === 'shock') {
+    const x = E.SHOCKS.find(z => z.id === c.id), r = shockRes(c.scen, c.id, c.when);
+    const helps = [];
+    if (r.ucUp > 20) helps.push(`Universal Credit would rise by about ${money(r.ucUp)} afterwards.`);
+    if (x.type === 'expense') helps.push('A UC Budgeting Advance (interest-free) can cover one-off costs like this.');
+    if (c.scen.shield) helps.push(`Your Storm Shield would hold about ${money(r.shieldAt || 0)} by then.`);
+    return `<div class="cx" data-type="shock"><h4>${x.icon} ${esc(x.title)}, ${E.fmtDay(WHEN[c.when].d)}</h4><div class="sub">${esc(x.what)}</div>
+      <div class="sub" style="margin-top:10px">Chance of running short in the 8 weeks after</div><div class="vs"><s>${pct(r.pBefore)}</s><span class="big ${r.pAfter - r.pBefore > 0.1 ? 'bad' : ''}">${pct(r.pAfter)}</span>${S.simple ? `<span class="sub">(${chanceWords(r.pAfter)})</span>` : ''}</div>
+      <div class="sub" style="margin-top:4px">Lowest balance ${money(r.lowBefore)} → ${money(r.lowAfter)}${Object.keys(c.scen).length ? ' (with your plan)' : ''}</div>
+      ${helps.length ? `<ul class="list" style="margin-top:8px">${helps.map(h => `<li>${h}</li>`).join('')}</ul>` : ''}</div>`;
+  }
+  if (t === 'shield') {
+    const sg = shieldSug(), cfg = shieldCfg();
+    if (sg.perWeek <= 2) return `<div class="cx" data-type="shield"><h4>🛡️ Storm Shield</h4><div class="sub" style="margin-top:4px">There's no spare money to save safely yet. Fix the timing first, and then it can fill up.</div></div>`;
+    const ys = S.shieldOn ? year(resScen()) : null, hit = ys ? ys.days.find(x => x.sh50 >= cfg.target - 0.5) : null;
+    return `<div class="cx" data-type="shield"><div class="row"><h4>🛡️ Storm Shield</h4>${S.shieldOn ? '<span class="sub good" style="font-weight:800">On</span>' : `<button class="add" data-act="shieldon">Turn on</button>`}</div>
+      <div style="margin-top:6px"><span class="big">${money(cfg.weekly)}</span> <span class="sub">a week, from ${E.fmtDay(cfg.start)}</span></div>
+      ${S.shieldOn && hit ? `<div class="sub">Reaches <b>${money(cfg.target)}</b> around ${E.fmtDay(hit.d)}</div>` : `<div class="sub">About half of the ${money(sg.perWeek)} a week your plan frees up</div>`}
+      <div class="sub" style="margin-top:8px">Saves only on paydays when at least £150 is left, and covers dips automatically. It doesn't create money, it sets spare money aside.</div></div>`;
+  }
+  if (t === 'year') {
+    const y0 = year({}), y1 = S.plan.size ? year(resScen()) : null;
+    const end0 = y0.days[363].p50, end1 = y1 ? y1.days[363].p50 + (y1.shieldEndMed || 0) : null;
+    return `<div class="cx" data-type="year"><h4>The next 12 months</h4>${yearChart(y0, y1)}
+      <div class="row" style="margin-top:6px"><div><div class="sub">Months in the red</div><div class="vs">${y1 ? `<s>${monthsRed(y0)}</s><span class="big good">${monthsRed(y1)}</span>` : `<span class="big bad">${monthsRed(y0)}</span>`}</div></div>
+      <div style="text-align:right"><div class="sub">By ${E.MON[E.ymd(P.today + 363).m-1]} ${E.ymd(P.today + 363).y}</div><div class="vs" style="justify-content:flex-end">${y1 ? `<s>${money(end0)}</s><span class="big good">${money(end1)}</span>` : `<span class="big bad">${money(end0)}</span>`}</div></div></div>
+      ${y1 ? `<ul class="list" style="margin-top:6px"><li>Apr: QuickCash loan paid off</li>${S.plan.has('childcare') ? '<li>Every month: 85% of childcare back through UC</li>' : ''}${S.shieldOn ? '<li>A Storm Shield ready for surprises</li>' : ''}</ul>` : ''}</div>`;
+  }
+  if (t === 'afford') {
+    const r = E.affordCheck(M, c.scen, { horizon:H }, c.amt, c.d);
+    const ok = r.dExp < 0.3 && (!r.worst || r.worst.delta < 0.04);
+    return `<div class="cx" data-type="afford"><div class="row"><h4>${money(c.amt)} on ${E.fmtDay(c.d)}</h4><span class="big ${ok ? 'good' : 'bad'}" style="font-size:calc(17px*var(--fs))">${ok ? '✓ OK' : '⚠ Tight'}</span></div>
+      ${r.worst && r.worst.delta >= 0.02 ? `<div class="sub" style="margin-top:6px">Chance of running short around ${E.fmtDay(r.worst.st.peak)}: ${chance(r.worst.pb)} → <b class="bad">${chance(r.worst.pw)}</b></div>` : `<div class="sub" style="margin-top:6px">It doesn't make any risky spell worse.</div>`}
+      ${r.best ? `<div class="sub" style="margin-top:4px">Waiting until <b>${E.fmtDay(r.best.d)}</b> would hurt much less.</div>` : ''}</div>`;
+  }
+  if (t === 'help') {
+    return `<div class="cx" data-type="help"><h4>Free, confidential help</h4><ul class="list"><li><b>StepChange</b>: debt advice (stepchange.org)</li><li><b>Citizens Advice</b>: benefits and debt (citizensadvice.org.uk)</li><li><b>MoneyHelper</b>: free guidance (moneyhelper.org.uk)</li><li>Your bank's financial support team</li></ul></div>`;
+  }
+  return '';
+}
+
+// ---------- coach flows (deterministic, instant to compute) ----------
+function flowOpen(){
+  const st = topStorm(base());
+  say(`Hi ${P.name}. I've looked ahead at your next 12 weeks. Most of it is fine, but <b>${S.simple ? 'money is likely to run short' : 'a storm is likely'} around ${E.fmtDay(st.peak)}</b>.`, [{ type:'forecast' }], DEFAULT_REPLIES);
+}
+function flowWhy(){
+  say(`It's mostly about <b>timing</b>, not overspending:`, [{ type:'why' }], ['What can I do?', 'How does my UC work?', 'Can I afford something?']);
+  say(`The good news: timing can be fixed.`);
+}
+function flowFixes(all){
+  const ids = all ? ranked().map(f => f.id) : topFixes(3);
+  say(all ? `Here's everything I tested, most helpful first:` : `These three would help most. I tested each one on 400 possible futures:`, [{ type:'fixes', ids }],
+    S.plan.size ? ['What if something goes wrong?', 'Show me the year'] : ['Add all three', 'Show me everything', 'What if something goes wrong?']);
+}
+function flowAdd(ids){
+  ids.forEach(id => S.plan.add(id));
+  const b = base(), p = planned();
+  say(`Done. With ${S.plan.size === E.FIXES.length ? 'all of these changes' : 'these changes'}, your chance of running short drops from <b>${pct(b.pAny)}</b> to <b>${pct(p.pAny)}</b>.${S.plan.has('childcare') ? ' One of them is money you\'re already entitled to: UC pays back 85% of childcare costs.' : ''}`,
+    [{ type:'impact', scen:planScen() }], S.plan.size < E.FIXES.length ? ['Add the rest', 'What if something goes wrong?', 'Show me the year'] : ['What if something goes wrong?', 'Show me the year']);
+}
+function flowShockPick(){ say(`A good plan has to survive surprises. Pick one and I'll rerun your future:`, [{ type:'shockpick' }], ['Set up a Storm Shield', 'Show me the year']); }
+function flowShock(id, when = 'next'){
+  const scen = resScen(), r = shockRes(scen, id, when);
+  const worse = r.pAfter - r.pBefore > 0.1;
+  say(worse ? `That would hurt. ${S.plan.size ? 'Even with your plan, ' : ''}the chance of running short jumps to <b>${chance(r.pAfter)}</b>.` : r.pAfter >= 0.25 ? `That adds a little more risk, from ${chance(r.pBefore)} to <b>${chance(r.pAfter)}</b>. Universal Credit softens part of it.` : `You'd get through that. The chance of running short stays <b>${chance(r.pAfter)}</b>.`,
+    [{ type:'shock', id, when, scen }], S.shieldOn ? ['Try another shock', 'Show me the year'] : ['Set up a Storm Shield', 'Try another shock', 'Show me the year']);
+  if (worse && !S.shieldOn) say(`A <b>Storm Shield</b>, a small buffer that fills itself, would soften this.`);
+}
+function flowShield(){
+  const sg = shieldSug();
+  if (sg.perWeek <= 2) { say(`Right now there's no spare money to save safely. Let's fix the timing first, and then I'll build your buffer.`, [{ type:'shield' }], ['What can I do?']); return; }
+  say(`I can set aside <b>${money(shieldCfg().weekly)} a week</b>, about half of what your plan frees up, and only on paydays when at least £150 is left.`, [{ type:'shield' }], S.shieldOn ? ['Show me the year'] : ['Turn it on', 'Show me the year']);
+}
+function flowShieldOn(){
+  if (shieldSug().perWeek <= 2) return flowShield();
+  S.shieldOn = true;
+  const ys = year(resScen()), hit = ys.days.find(x => x.sh50 >= shieldCfg().target - 0.5);
+  say(`Done 🛡️ Your Storm Shield should reach <b>${money(S.shieldTarget)}</b>${hit ? ` around <b>${E.fmtDay(hit.d)}</b>` : ''}. If a dip comes first, it covers it automatically.`, [{ type:'shield' }], ['Show me the year', 'What if something goes wrong?']);
+}
+function flowYear(){
+  const y0 = year({}), y1 = S.plan.size ? year(resScen()) : null;
+  say(y1 ? `Here's your year. Out of the red, the loan gone by April, and the support you're entitled to claimed:` : `Here's your year if nothing changes. The gap between the 1st and the 16th hits <b>${monthsRed(y0)} of 12 months</b>:`,
+    [{ type:'year' }], y1 ? ['Can I afford something?', 'What if something goes wrong?'] : ['What can I do?']);
+}
+function flowAffordPrompt(){ say(`Sure. What do you want to buy, and when?`, [], ['£60 trainers on Saturday', '£150 school trip on 5 Dec', '£40 night out on Friday']); }
+function flowAfford(amt, d){
+  if (d >= P.today + H) { say(`That's more than 12 weeks away. Ask me again closer to the time and I'll check.`); return; }
+  const r = E.affordCheck(M, planScen(), { horizon:H }, amt, d);
+  const ok = r.dExp < 0.3 && (!r.worst || r.worst.delta < 0.04);
+  say(ok ? `Yes, that looks fine${S.plan.size ? ' with your plan' : ''}. I ran your future with and without it.` : `You can pay for it, but it makes things tighter. I ran your future with and without it:`,
+    [{ type:'afford', amt, d, scen:planScen() }], ok ? ['What if something goes wrong?', 'Show me the year'] : ['What can I do?', 'Can I afford something?']);
+}
+function flowUC(){
+  const ucs = Object.entries(base().ucMed);
+  say(`Your Universal Credit lands around the <b>16th</b>. It goes down by <b>55p for every £1</b> you earn over ${money(M.ucParams.workAllowance)} in the month before, so busy weeks mean less UC the month after:<br>${ucs.map(([d, v]) => `${E.fmtDay(+d)}: about <b>${money(v)}</b>`).join('<br>')}`, [], ['Why?', 'What can I do?'], 'Uses your UC award statement and your forecast earnings. Simplified model.');
+}
+function flowBills(){
+  const items = []; base().days.slice(0, 14).forEach(x => x.bills.forEach(e => items.push(`${E.fmtDay(x.d)}: ${esc(e.label)} <b>${money(-e.amt, true)}</b>`)));
+  say(`In the next two weeks:<br>${items.join('<br>')}`, [], DEFAULT_REPLIES);
+}
+function flowWorried(){
+  say(`That sounds really stressful, and you're not alone. Asking early gives you the most options. Your QuickCash loan costs £32 a week, and a debt adviser can talk to the lender for you. Here's free help that won't judge you:`, [{ type:'help' }], ['What can I do?', 'Show me the year']);
+}
+function flowEntitled(){
+  say(`Yes, I think so. You pay <b>${money(45)} a week</b> for the after-school club, and Universal Credit pays back <b>85% of registered childcare costs</b>, which is about <b>${money(45 * 52 / 12 * 0.85)} a month</b>. People on UC often qualify for <b>Council Tax Reduction</b> too.`, [{ type:'fixes', ids:['childcare', 'ctr'] }], ['What can I do?', 'Show me the year'], 'Spotted from your regular payments. Childcare must be Ofsted-registered; Council Tax Reduction is an estimate until your council confirms.');
+}
+function flowBorrow(){
+  const p = S.plan.size ? planned() : base();
+  say(`I'd avoid borrowing if you can. Another high-cost loan would make the next tight month harder. ${S.plan.size ? `With your plan, the chance of running short is already down to <b>${pct(p.pAny)}</b>.` : `A few changes could bring your chance of running short from <b>${pct(base().pAny)}</b> to about <b>${pct(sim(Object.fromEntries(topFixes(3).map(k => [k, true]))).pAny)}</b> without borrowing.`} For a true emergency, a UC Budgeting Advance is interest-free. I can't recommend a loan or other financial product.`, [{ type:'help' }], S.plan.size ? ['Set up a Storm Shield', 'Show me the year'] : ['What can I do?', 'Set up a Storm Shield']);
+}
+function flowXmas(){ say(`Last December you spent about <b>${money(M.xmasLastYear)}</b> on presents in the first three weeks. Keeping it to £200 is one of the most helpful changes.`, [{ type:'fixes', ids:['xmas'] }], ['What can I do?', 'Show me the year']); }
+
+function parseDate(t){
+  t = t.toLowerCase(); const today = P.today;
+  if (/\btoday|now\b/.test(t)) return today;
+  if (/tomorrow/.test(t)) return today + 1;
+  if (/next week/.test(t)) return today + 7;
+  const mm = t.match(/(\d{1,2})(st|nd|rd|th)?\s*(of\s*)?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/) || t.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\s*(\d{1,2})/);
+  if (mm) { const mon = isNaN(+mm[1]) ? mm[1] : mm[4], day = isNaN(+mm[1]) ? +mm[2] : +mm[1]; const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(mon) + 1; let d = E.dn(E.ymd(today).y, mi, day); if (d < today) d = E.dn(E.ymd(today).y + 1, mi, day); return d; }
+  const full = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  for (let i = 0; i < 7; i++) if (t.includes(full[i])) { let d = today + 1; while (E.ymd(d).wd !== i) d++; return d; }
+  return today;
+}
+function route(q){
+  const t = q.toLowerCase();
+  const amt = (t.match(/£\s?(\d+(?:\.\d+)?)/) || t.match(/(\d+(?:\.\d+)?)\s?(quid|pounds)/) || [])[1];
+  if (/borrow|another loan|payday loan|take (out )?a loan/.test(t)) return flowBorrow();
+  if (/worr|stress|struggl|can'?t pay|debt|scared|anxious/.test(t)) return flowWorried();
+  if (amt && !/shock|break|what if/.test(t)) return flowAfford(+amt, parseDate(t));
+  if (/afford/.test(t)) return flowAffordPrompt();
+  if (/turn (it )?on|yes,? turn/.test(t)) return flowShieldOn();
+  if (/shield|buffer|saving|\bsave\b|emergency fund/.test(t)) return flowShield();
+  if (/entitled|claim|missing out|free money|support i/.test(t)) return flowEntitled();
+  if (/what if|goes wrong|break|broke|\bill\b|\bsick|pay cut|cuts? (my )?pay|rent (goes|going) up|another shock|surprise|washing machine/.test(t)) {
+    const id = /bike/.test(t) ? 'bike' : /\bill\b|\bsick/.test(t) ? 'ill' : /washing|machine|boiler|fridge/.test(t) ? 'washer' : /cut/.test(t) ? 'ratecut' : /rent/.test(t) ? 'rent' : null;
+    const when = /dec/.test(t) ? 'dec' : /feb/.test(t) ? 'feb' : /may/.test(t) ? 'may' : 'next';
+    return id ? flowShock(id, when) : flowShockPick();
+  }
+  if (/add all three|add the top|add those/.test(t)) return flowAdd(topFixes(3));
+  if (/add the rest|add everything|add all/.test(t)) return flowAdd(E.FIXES.map(f => f.id));
+  if (/show me everything|all (the )?changes|other changes|more options/.test(t)) return flowFixes(true);
+  if (/what can i do|help|fix|first|should i|advice|plan/.test(t)) return flowFixes(false);
+  if (/year|12 months|long term|next year/.test(t)) return flowYear();
+  if (/christmas|xmas|gift|present/.test(t)) return flowXmas();
+  if (/\buc\b|universal credit|benefit/.test(t)) return flowUC();
+  if (/bill|due|coming up|direct debit/.test(t)) return flowBills();
+  if (/\bwhy\b|jan|explain|storm|bad/.test(t)) return flowWhy();
+  if (/^(hi|hello|hey)\b/.test(t)) return say(`Hello! Ask me anything about your money, or tap one of the suggestions.`, [], DEFAULT_REPLIES);
+  return say(`I'm not sure I understood that. I can explain your forecast, suggest changes, check a purchase, or test what happens if something goes wrong.`, [], DEFAULT_REPLIES);
+}
+
+// ---------- live AI coach (Claude via `sample`) ----------
+let SAMPLE = null, AI = 'checking';
+(async () => {
+  try { if (window.claude && typeof window.claude.use === 'function') SAMPLE = await window.claude.use('sample'); } catch (_) { SAMPLE = null; }
+  AI = SAMPLE ? 'ready' : 'off'; if (S.tab === 'coach') renderComposer();
+})();
+const stripTags = h => h.replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').split('\n').map(l => /^\s*[-•*]\s+/.test(l) ? '• ' + l.replace(/^\s*[-•*]\s+/, '') : l).join('<br>');
+function stormJSON(st){ return { from:iso(st.start), to:iso(st.end), worst_day:iso(st.peak), chance_of_running_out:pct(st.pPeak), expected_lowest_balance:Math.round(st.lowMed), causes:st.drivers.map(d => d.text) }; }
+const CARD_TYPES = ['forecast', 'why', 'fixes', 'impact', 'shock_picker', 'shield', 'year', 'help'];
+function aiTools(m){
+  const attach = c => { if (!m.cards.some(x => x.type === c.type)) m.cards.push(c); };
+  return [
+    { name:'show_card', description:'Show a visual card in the chat. forecast = 12-week chart and weekly weather; why = causes of the worst storm; fixes = the most helpful changes with Add buttons; impact = before/after with her plan; shock_picker = choose a shock to test; shield = Storm Shield; year = 12-month view; help = free debt-advice organisations. Use at most two per reply.',
+      inputSchema:{ type:'object', properties:{ card:{ type:'string', enum:CARD_TYPES } }, required:['card'] },
+      execute:({ card:c }) => { const map = { shock_picker:'shockpick' }; const t = map[c] || c; attach(t === 'impact' ? { type:t, scen:planScen() } : t === 'fixes' ? { type:t, ids:topFixes(3) } : { type:t }); return { shown:c }; } },
+    { name:'get_forecast', description:"Jane's 12-week forecast: chance of running out, lowest balance, risky spells with causes, expected UC payments. use_plan=true uses the changes in her plan.",
+      inputSchema:{ type:'object', properties:{ use_plan:{ type:'boolean' } } },
+      execute:({ use_plan }) => { const r = use_plan && S.plan.size ? planned() : base(); return { today:iso(P.today), balance_today:M.balance, chance_of_running_out:pct(r.pAny), lowest_expected_balance:Math.round(r.lowMed), lowest_day:iso(r.lowDay), storms:r.storms.map(stormJSON), universal_credit_expected:Object.entries(r.ucMed).map(([d, v]) => ({ date:iso(+d), amount:Math.round(v) })), plan:[...S.plan].map(id => fixById(id).title) }; } },
+    { name:'check_purchase', description:'What-if for a one-off purchase: reruns the forecast with and without it (uses her plan). date YYYY-MM-DD within 12 weeks of ' + iso(P.today) + '. Shows a card automatically.',
+      inputSchema:{ type:'object', properties:{ amount:{ type:'number' }, date:{ type:'string' } }, required:['amount','date'] },
+      execute:({ amount, date }) => { const d = fromIso(date) ?? P.today; if (d < P.today || d >= P.today + H) throw new Error('date must be within the next 12 weeks'); const r = E.affordCheck(M, planScen(), { horizon:H }, +amount, d); attach({ type:'afford', amt:+amount, d, scen:planScen() });
+        return { looks_ok:r.dExp < 0.3 && (!r.worst || r.worst.delta < 0.04), extra_risky_days:+r.dExp.toFixed(1), most_affected:r.worst ? { day:iso(r.worst.st.peak), chance_before:pct(r.worst.pb), chance_after:pct(r.worst.pw) } : null, better_date:r.best ? iso(r.best.d) : null }; } },
+    { name:'list_fixes', description:'All changes she could make, each tested by simulation (risky days removed), with effort and whether it is in her plan.',
+      inputSchema:{ type:'object', properties:{} },
+      execute:() => { const imp = impacts(); return ranked().map(f => ({ id:f.id, title:f.title, effort:f.effort, how:fixText(f), estimate:!!f.estimate, risky_days_removed:+imp[f.id].dExp.toFixed(1), in_plan:S.plan.has(f.id) })); } },
+    { name:'add_to_plan', description:'Add changes to her plan (a what-if; nothing is moved or sent). Only when she asks or agrees. Shows the impact automatically.',
+      inputSchema:{ type:'object', properties:{ fix_ids:{ type:'array', items:{ type:'string' } } }, required:['fix_ids'] },
+      execute:({ fix_ids }) => { (fix_ids || []).forEach(id => { if (fixById(id)) S.plan.add(id); }); attach({ type:'impact', scen:planScen() }); return { plan:[...S.plan], chance_before:pct(base().pAny), chance_with_plan:pct(planned().pAny) }; } },
+    { name:'test_shock', description:'Stress-test a surprise: ' + E.SHOCKS.map(x => `${x.id} (${x.title})`).join(', ') + '. when: next | dec | feb | may. Shows a card automatically.',
+      inputSchema:{ type:'object', properties:{ shock_id:{ type:'string', enum:E.SHOCKS.map(x => x.id) }, when:{ type:'string', enum:['next','dec','feb','may'] } }, required:['shock_id'] },
+      execute:({ shock_id, when }) => { const w = WHEN[when] ? when : 'next', scen = resScen(), r = shockRes(scen, shock_id, w); attach({ type:'shock', id:shock_id, when:w, scen });
+        return { chance_next_8_weeks:{ without:pct(r.pBefore), with:pct(r.pAfter) }, lowest_balance:{ without:Math.round(r.lowBefore), with:Math.round(r.lowAfter) }, uc_rises_by:Math.round(r.ucUp), shield_then:r.shieldAt != null ? Math.round(r.shieldAt) : 'none' }; } },
+    { name:'storm_shield', description:'Get the Storm Shield suggestion, or turn it on (only if she agrees). Saves on paydays only when at least £150 is left and covers dips automatically. It does not create money.',
+      inputSchema:{ type:'object', properties:{ turn_on:{ type:'boolean' } } },
+      execute:({ turn_on }) => { const sg = shieldSug(); if (turn_on && sg.perWeek > 2) S.shieldOn = true; attach({ type:'shield' }); return { on:S.shieldOn, suggested_weekly:sg.perWeek > 2 ? shieldCfg().weekly : 'no spare money yet', spare_per_week:Math.round(sg.perWeek), start:iso(sg.start) }; } },
+    { name:'get_year', description:'The next 12 months with and without her plan: months likely in the red and money by next November. Shows a card automatically.',
+      inputSchema:{ type:'object', properties:{} },
+      execute:() => { const y0 = year({}), y1 = S.plan.size ? year(resScen()) : null; attach({ type:'year' }); return { without_plan:{ months_in_red:monthsRed(y0), money_next_nov:Math.round(y0.days[363].p50) }, with_plan:y1 ? { months_in_red:monthsRed(y1), money_next_nov:Math.round(y1.days[363].p50 + (y1.shieldEndMed || 0)) } : 'no plan yet', loan_ends:iso(P.knownEnds['QUICKCASH LOANS']) }; } },
+    { name:'get_profile', description:"What the app learned from her transactions: income, UC rules, bills, patterns, unclaimed support, free help.",
+      inputSchema:{ type:'object', properties:{} },
+      execute:() => ({ person:P.full + ', ' + P.place + '. ' + P.blurb, delivery_pay_per_week:Math.round(M.gLevel), uc:{ day:16, last:M.lastUC, rule:'55p less per £1 earned above £427 in the assessment period (10th–9th)' }, bills:M.recurring.map(r => ({ name:E.prettyName(r.desc), amount:r.amount, cadence:r.cadence })), unclaimed:'UC childcare element: 85% of registered childcare (she pays £45/week after-school club)', christmas_last_year:Math.round(M.xmasLastYear), takeaways_per_week:Math.round(M.takeaway), high_cost_loan:'QuickCash £32/week until 16 Apr 2027', free_help:['StepChange','Citizens Advice','MoneyHelper'] }) },
+  ];
+}
+function aiInstructions(){
+  return `You are the money coach inside "Future You", a banking app prototype (hackathon demo; all data synthetic). You're talking to Jane Doe, 31, a food-delivery rider and single mum in Manchester on Universal Credit. Today is ${E.fmtDay(P.today, true)} ${E.ymd(P.today).y}.
+Rules:
+- Get every number and date from the tools. Never invent figures. If tools can't answer, say so.
+- Be brief: 1–3 short sentences. Visual detail goes in cards: use show_card (or tools that show cards automatically) instead of long text.
+- Warm, plain UK English, never judgemental. ${S.simple ? 'Use simple words; say chances like "about 3 in 10".' : 'Percentages are fine.'}
+- Only change her plan or turn on the Storm Shield if she asks or agrees. You never move money, contact anyone or recommend a financial product. Not regulated advice.
+- If she's worried or mentions debt: kindness first, then show_card help.
+- Plain text with **bold** for key numbers. No headings, tables or links.`;
+}
+async function askClaude(q){
+  me(q);
+  const m = say('<span class="typing"><span></span><span></span><span></span></span>', [], []); m.live = true;
+  S.busy = true; render();
+  const used = [];
+  const tools = aiTools(m).map(t => ({ ...t, execute:input => { used.push(t.name); return t.execute(input || {}); } }));
+  const hist = S.chat.filter(x => x !== m).slice(-12).map(x => ({ role:x.who === 'me' ? 'user' : 'assistant', content:x.text || stripTags(x.html) })).filter(x => x.content.trim());
+  while (hist.length && hist[0].role !== 'user') hist.shift();
+  const msgs = []; for (const h of hist) { if (msgs.length && msgs[msgs.length-1].role === h.role) msgs[msgs.length-1].content += '\n' + h.content; else msgs.push({ ...h }); }
+  msgs[0] = { role:'user', content:aiInstructions() + '\n\n---\nJane: ' + msgs[0].content };
+  try {
+    const r = await SAMPLE(msgs, { tools, cache:false, onText:({ text }) => { m.text = text; m.html = md(text); const el = document.querySelector(`[data-mid="${m.id}"] .txt`); if (el) { el.innerHTML = m.html; scrollChat(); } } });
+    m.text = r.text; m.html = md(r.text);
+    const u = [...new Set(used)].filter(n => n !== 'show_card');
+    m.why = u.length ? `Claude checked: ${u.map(n => n.replace(/_/g, ' ')).join(', ')}` : 'Claude';
+    S.replies = DEFAULT_REPLIES;
+  } catch (e) {
+    if (e && e.code === 'not_granted') { SAMPLE = null; AI = 'off'; }
+    S.chat.splice(S.chat.indexOf(m), 1); S.chat.pop();
+    me(q); route(q);
+    S.chat[S.chat.length - 1].why = 'Built-in coach (live AI unavailable)';
+  }
+  S.busy = false; render();
+}
+function userAsk(q, viaChip){
+  q = q.trim(); if (!q || S.busy) return;
+  if (!viaChip && SAMPLE && S.live) return askClaude(q);
+  me(q);
+  if (S.instant || !S.motion) { route(q); render(); speakLast(); return; }
+  S.busy = true; S.typingNow = true; render();
+  setTimeout(() => { S.typingNow = false; S.busy = false; route(q); render(); speakLast(); }, 450);
+}
+function speakLast(){
+  if (!S.speak) return;
+  try { const m = [...S.chat].reverse().find(x => x.who === 'ai'); speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(stripTags(m.html)); u.lang = 'en-GB'; speechSynthesis.speak(u); } catch (_) {}
+}
+
+// ---------- views ----------
+const ICONS = {
+  coach:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  forecast:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l5-5 4 3 8-8"/><path d="M14 7h6v6"/></svg>',
+  plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>',
+};
+function renderTop(){
+  $('#hello').textContent = `Hi ${P.name} · ${E.fmtDay(P.today)}`;
+  $('#bal').textContent = money(M.balance, true);
+  $('#tabs').innerHTML = [['coach','Coach'],['forecast','Forecast'],['plan','My plan']].map(([id, l]) => `<button class="tab" role="tab" aria-selected="${S.tab===id}" data-tab="${id}">${ICONS[id]}${l}${id === 'plan' && S.plan.size ? ` (${S.plan.size})` : ''}</button>`).join('');
+}
+function viewCoach(){
+  if (!S.chat.length) flowOpen();
+  return `<div class="chat" role="log" aria-live="polite" aria-label="Conversation with your money coach">${S.chat.map(m => m.who === 'me'
+    ? `<div class="msg me" data-mid="${m.id}">${m.html}</div>`
+    : `<div class="msg ai" data-mid="${m.id}"><div class="av" aria-hidden="true">✦</div><div class="body"><div class="txt">${m.html}</div>${m.cards.map(card).join('')}${m.why ? `<div class="why">${esc(m.why)}</div>` : ''}</div></div>`).join('')}
+    ${S.typingNow ? '<div class="msg ai"><div class="av" aria-hidden="true">✦</div><div class="body typing" aria-label="Coach is typing"><span></span><span></span><span></span></div></div>' : ''}</div>`;
+}
+function renderComposer(){
+  const el = $('#composer');
+  if (S.tab !== 'coach') { el.innerHTML = ''; return; }
+  const tag = AI === 'ready' ? `<div class="aitag"><span>${S.live ? '● Live AI: typed questions go to Claude' : 'Built-in coach'}</span><button data-act="live">${S.live ? 'Turn off' : 'Turn on'}</button></div>` : '';
+  el.innerHTML = `<div class="composer">${tag}<div class="replies" role="group" aria-label="Suggested questions">${S.replies.map(r => `<button class="qr" data-act="qr" data-v="${esc(r)}">${esc(r)}</button>`).join('')}</div>
+    <form class="inrow" data-act="send"><label class="sr" for="q">Ask your coach</label><input id="q" autocomplete="off" placeholder="Ask anything about your money…"><button class="send" type="submit" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form></div>`;
+}
+function viewForecast(){
+  const b = base(), hasPlan = S.plan.size > 0, showPlan = hasPlan && S.fview === 'plan', r = showPlan ? planned() : b;
+  const st = topStorm(r), wk = weeks(r);
+  const sel = S.selWeek != null ? wk[S.selWeek] : (st ? wk.find(w => w.days.some(x => x.d === st.peak)) : wk[0]);
+  const low = sel.days.reduce((a, x) => x.p50 < a.p50 ? x : a, sel.days[0]);
+  const bills = sel.days.flatMap(x => x.bills.map(e => `${E.fmtDay(x.d)}: ${esc(e.label)} ${money(-e.amt)}`));
+  const inc = sel.days.flatMap(x => [r.ucMed[x.d] != null ? `${E.fmtDay(x.d)}: Universal Credit about ${money(r.ucMed[x.d])}` : null, r.gigMed[x.d] != null ? `${E.fmtDay(x.d)}: delivery pay about ${money(r.gigMed[x.d])}` : null].filter(Boolean));
+  return `<div class="h2">Next 12 weeks</div>
+    <div class="sub">${st ? `${WXE[st.severity]} ${S.simple ? 'Most likely to run short' : `${pct(st.pPeak)} chance of running short`} around ${E.fmtDay(st.peak)}` : '☀️ No risky spells ahead'}</div>
+    ${hasPlan ? `<div class="seg" role="group" aria-label="Which future"><button aria-pressed="${!showPlan}" data-act="fview" data-v="today">If nothing changes</button><button aria-pressed="${showPlan}" data-act="fview" data-v="plan">With my plan</button></div>` : '<div style="height:10px"></div>'}
+    ${lineChart(b, showPlan ? r : null, { h:190, id:'fchart' })}
+    <div class="legend"><span><i style="background:${showPlan ? '#0f8a5f' : '#5b2a9c'}"></i>Most likely</span>${showPlan ? '<span><i style="background:#a79cbd"></i>Without plan</span>' : ''}<span><i style="background:${showPlan ? '#cdeee0' : '#e7dcf6'};height:8px"></i>Likely range</span></div>
+    <div class="weekrow" role="group" aria-label="Weekly money weather">${wk.map(w => `<button class="wk" aria-pressed="${w === sel}" data-act="week" data-v="${w.k}" aria-label="Week of ${E.fmtDay(w.start)}: ${WXW[w.w]}"><span aria-hidden="true">${WXE[w.w]}</span>${short(w.start)}</button>`).join('')}</div>
+    <div class="panel" aria-live="polite"><b>Week of ${E.fmtDay(sel.start)}</b> <span class="sub">· ${WXW[sel.w]}</span>
+      <div class="sub" style="margin-top:4px">Lowest point: about <b>${money(low.p50)}</b> on ${E.fmtDay(low.d)}${S.simple ? '' : ` (likely ${money(low.p10)} to ${money(low.p90)})`}</div>
+      ${bills.length || inc.length ? `<ul class="list" style="margin-top:6px">${inc.map(x => `<li class="good">+ ${x}</li>`).join('')}${bills.map(x => `<li>− ${x}</li>`).join('')}</ul>` : ''}
+      <button class="link" data-act="askweek" data-v="${sel.k}">Ask the coach about this week →</button></div>`;
+}
+function viewPlan(){
+  const b = base(), p = planned(), imp = impacts(), sg = shieldSug(), cfg = shieldCfg();
+  const y0 = year({}), y1 = S.plan.size ? year(resScen()) : null;
+  return `<div class="h2">My plan</div>
+    <div class="panel" style="margin-top:8px"><div class="sub">Chance of running short in the next 12 weeks</div>
+      <div class="vs">${S.plan.size ? `<s>${pct(b.pAny)}</s><span class="big good">${pct(p.pAny)}</span>` : `<span class="big bad">${pct(b.pAny)}</span>`}</div>
+      ${S.plan.size ? '' : '<div class="sub" style="margin-top:4px">No changes yet. Switch some on below, or ask your coach.</div>'}</div>
+    <div class="panel"><b>Changes</b>${ranked().map(f => { const on = S.plan.has(f.id), d = Math.round(imp[f.id].dExp);
+      return `<div class="prow"><div class="t"><b>${esc(SHORT[f.id])}</b><span>${d >= 1 ? `Removes about ${d} risky day${d > 1 ? 's' : ''}` : 'Small help'}${f.estimate ? ' · estimate' : ''}${DRAFTS[f.id] ? ` · <button class="link" style="margin:0" data-act="draft" data-v="${f.id}">write it for me</button>` : ''}</span></div>
+      <button class="tg" role="switch" aria-checked="${on}" aria-label="${esc(f.title)}" data-act="fix" data-v="${f.id}"></button></div>`; }).join('')}</div>
+    <div class="panel"><div class="prow" style="padding-top:0"><div class="t"><b>🛡️ Storm Shield</b><span>${sg.perWeek > 2 ? `${money(cfg.weekly)} a week · covers dips automatically` : 'Needs some spare money first: add changes above'}</span></div>
+      <button class="tg" role="switch" aria-checked="${S.shieldOn}" aria-label="Storm Shield" data-act="shieldtoggle" ${sg.perWeek > 2 ? '' : 'disabled style="opacity:.4"'}></button></div></div>
+    <div class="panel"><b>The next 12 months</b>${yearChart(y0, y1)}
+      <div class="sub">Months in the red: <b>${monthsRed(y0)}${y1 ? ` → <span class="good">${monthsRed(y1)}</span>` : ''}</b></div></div>
+    <details><summary>What I know about your money</summary><ul>
+      <li>Delivery pay every Wednesday, usually about ${money(M.gLevel)}. Busiest in December, quietest in January</li>
+      <li>Universal Credit around the 16th, lower after busy months</li>
+      <li>${M.recurring.length} regular payments, including rent ${money(725)} on the 1st</li>
+      <li>After-school club ${money(45)} a week: 85% can be claimed back through UC</li>
+      <li>QuickCash loan ${money(32)} a week until April</li></ul></details>
+    <div class="sub" style="margin:14px 2px 0">Nothing changes until you choose it. Future You never moves money on its own, and your forecast is never used for lending decisions.</div>`;
+}
+
+// ---------- sheets ----------
+function renderSheet(){
+  const el = $('#sheet');
+  if (!S.sheet) { el.innerHTML = ''; return; }
+  if (S.sheet.type === 'draft') {
+    const f = fixById(S.sheet.id);
+    el.innerHTML = `<div class="sheet-bg" data-act="closesheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Draft message"><h2>✍️ ${esc(f.title)}</h2><div class="sub">${esc(fixText(f))}</div><div class="draft">${esc(DRAFTS[f.id])}</div>
+      <div style="display:flex;gap:8px"><button class="btn" data-act="copy" data-v="${f.id}">Copy message</button><button class="btn ghost" data-act="fix" data-v="${f.id}">${S.plan.has(f.id) ? '✓ In my plan' : 'Add to my plan'}</button><button class="btn ghost" data-act="closesheet" style="margin-left:auto">Close</button></div></div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="sheet-bg" data-act="closesheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Display settings"><h2>Make it work for you</h2>
+    <div class="opt"><div><b>Explanations</b><div class="sub">Simple words, or exact numbers</div></div><div class="chips"><button class="chip" aria-pressed="${S.simple}" data-act="simple" data-v="1">Simple</button><button class="chip" aria-pressed="${!S.simple}" data-act="simple" data-v="0">Detailed</button></div></div>
+    <div class="opt"><b>Text size</b><div class="chips">${[[1,'A'],[1.15,'A+'],[1.3,'A++']].map(([v, l]) => `<button class="chip" aria-pressed="${S.size===v}" data-act="size" data-v="${v}">${l}</button>`).join('')}</div></div>
+    <div class="opt"><b>High contrast</b><button class="tg" role="switch" aria-checked="${S.contrast}" data-act="contrast" aria-label="High contrast"></button></div>
+    <div class="opt"><div><b>Read replies aloud</b><div class="sub">The coach speaks its answers</div></div><button class="tg" role="switch" aria-checked="${S.speak}" data-act="speak" aria-label="Read replies aloud"></button></div>
+    <div class="opt"><b>Animations</b><button class="tg" role="switch" aria-checked="${S.motion}" data-act="motion" aria-label="Animations"></button></div>
+    <div class="opt"><div><b>Language</b><div class="sub">More coming: Polish, Urdu, Arabic, Welsh</div></div><span class="sub">English</span></div>
+    <button class="btn" style="width:100%;justify-content:center;margin-top:12px;padding:12px" data-act="closesheet">Done</button></div></div>`;
+}
+
+// ---------- side panel ----------
+function renderSide(){
+  if (S.tour) { $('#side').innerHTML = tourPanel(); return; }
+  const b = base(), all = sim(Object.fromEntries(E.FIXES.map(f => [f.id, true]))), y0 = year({});
+  $('#side').innerHTML = `<div class="kick">GreatUniHack 2026 · NatWest challenge</div>
+    <h1>Future You</h1>
+    <p class="lead">An AI money coach that sees storms weeks ahead, explains why, and helps you change the future.</p>
+    <div style="display:flex;gap:8px"><button class="btn" data-act="tour">▶ Play guided demo</button><button class="btn ghost" data-act="reset">↺ Reset</button></div>
+    <div class="persona"><div class="avatar" aria-hidden="true">🚲</div><div><b>${esc(P.full)}, ${esc(P.place)}</b><div class="small">${esc(P.blurb)}</div></div></div>
+    <details><summary>The numbers in one glance</summary><ul>
+      <li>Next 12 weeks: ${pct(b.pAny)} chance of running short → ${pct(all.pAny)} with all ${E.FIXES.length} changes</li>
+      <li>Next 12 months: ${monthsRed(y0)} months in the red → 0 with the plan</li>
+      <li>Biggest find: unclaimed childcare support (85% back through UC)</li></ul></details>
+    <details><summary>How the AI works</summary><ul>
+      <li>Reads ${M.txCount} transactions (12 months, Open Banking format) and finds bills, income, seasonal costs and unclaimed support</li>
+      <li>Learns seasonal earnings and the real Universal Credit rules (55% taper, childcare element)</li>
+      <li>Simulates 400 possible futures, from 12 weeks to 12 months, and stress-tests shocks</li>
+      <li>The coach is <b>Claude</b>: it calls the forecast engine as tools and shows its answers as cards, so it can't invent numbers. It falls back to a built-in coach offline</li></ul></details>
+    <details><summary>Is it accurate?</summary><p>Tested on October: average error ${money(BT.mae)}. ${pct(BT.coverage)} of days fell inside our 80% range, so the range is a little too narrow, and we say so. All data is synthetic, and the UC model is simplified.</p></details>
+    <details><summary>Responsible by design</summary><ul><li>Shows how sure it is, and explains every prediction</li><li>Never moves money; estimates are labelled</li><li>Simple words, large text, high contrast, read aloud</li><li>Points to free debt advice, never judges; forecast data is never used for lending</li></ul></details>
+    <details><summary>From prototype to product</summary><ul><li>NatWest account data or Open Banking for other banks</li><li>Same engine, tuned on anonymised data</li><li>Coach: Claude with guardrails and logging</li><li>One-tap actions: payment dates, claims, Storm Shield</li></ul></details>`;
+}
+
+// ---------- presenter mode ----------
+function resetAll(){ S.tab = 'coach'; S.plan.clear(); S.chat = []; S.replies = []; S.fview = 'today'; S.selWeek = null; S.sheet = null; S.shieldOn = false; S.shieldWeekly = null; S.shieldTarget = 300; S.busy = false; S.typingNow = false; }
+const lastCard = t => [...document.querySelectorAll(`.cx[data-type="${t}"]`)].pop();
+const chipSay = q => { me(q); route(q); };
+const TOUR = [
+  { title:'Meet Jane', spot:() => document.querySelector('.msg.ai'), go(){ S.tab = 'coach'; viewCoach(); },
+    text:() => `A delivery rider and single mum on Universal Credit, with <b>${money(M.balance)}</b> today. She opens the app and her coach speaks first.` },
+  { title:'A storm, 9 weeks ahead', spot:() => lastCard('forecast'), go(){},
+    text:() => { const st = topStorm(base()); return `Her coach has simulated <b>400 possible futures</b> from her own transactions. Around <b>${E.fmtDay(st.peak)}</b> she's ${pct(st.pPeak)} likely to run short.`; } },
+  { title:'It explains why', spot:() => lastCard('why'), go(){ chipSay('Why?'); },
+    text:() => `Not overspending, but <b>timing</b>: rent leaves on the 1st, UC lands mid-month, and a busy December cuts January's UC.` },
+  { title:'What would help', spot:() => lastCard('fixes'), go(){ chipSay('What can I do?'); },
+    text:() => `Real actions, each tested on the simulation, including <b>childcare costs she could claim back</b> but isn't.` },
+  { title:'It does the hard part', spot:() => document.querySelector('.sheet'), go(){ S.sheet = { type:'draft', id:'rentDate' }; },
+    text:() => `Moving rent to after payday? The coach <b>writes the message</b> to her landlord. Nothing happens without her say-so.` },
+  { title:'A different future', spot:() => lastCard('impact'), go(){ S.sheet = null; chipSay('Add all three'); chipSay('Add the rest'); },
+    text:() => `Three small changes take her chance of running short from <b>${pct(base().pAny)}</b> to <b>${pct(sim(Object.fromEntries(topFixes(3).map(k => [k, true]))).pAny)}</b>. All eight take it to <b>${pct(planned().pAny)}</b>.` },
+  { title:'But life happens', spot:() => lastCard('shock'), go(){ chipSay('What if my washing machine breaks next week?'); },
+    text:() => { const r = shockRes(resScen(), 'washer', 'next'); return `One £320 surprise next week, and even with the plan she's back to <b>${pct(r.pAfter)}</b>. She needs a buffer.`; } },
+  { title:'A Storm Shield', spot:() => lastCard('shield'), go(){ chipSay('Turn it on'); },
+    text:() => `A buffer that fills itself from the spare money her plan frees up: <b>${money(shieldCfg().weekly)} a week</b>, only when £150 is left. It covers dips automatically.` },
+  { title:'The next 12 months', spot:() => lastCard('year'), go(){ chipSay('Show me the year'); },
+    text:() => { const y0 = year({}), y1 = year(resScen()); return `From <b>${monthsRed(y0)} months in the red to ${monthsRed(y1)}</b>, the high-cost loan gone by April, and about <b>${money(y1.days[363].p50 + (y1.shieldEndMed || 0))}</b> by next November.`; } },
+  { title:'“Can I afford it?”', spot:() => lastCard('afford'), go(){ chipSay('£60 trainers on 14 Nov'); },
+    text:() => `Every purchase checked against her future, not just today's balance.` },
+  { title:'Ask anything', spot:() => document.querySelector('.composer'), go(){ setTimeout(() => { const i = $('#q'); if (i) i.value = 'Should I pay my credit card or save for January?'; }, 0); },
+    text:() => `Typed questions go to <b>Claude</b>, live. It calls the forecast engine as tools and answers with these cards, so <b>it can't make up numbers</b>.` },
+  { title:'Forecast at a glance', spot:() => document.getElementById('fchart'), go(){ S.tab = 'forecast'; S.fview = 'plan'; },
+    text:() => `One clear chart and 12 weeks of money weather. Her old future is the grey line, her new one is green.` },
+  { title:'Her plan in one place', spot:() => document.querySelector('.screen .panel'), go(){ S.tab = 'plan'; },
+    text:() => `Every change, the Storm Shield and the year ahead, each one switchable. Nothing happens until she chooses it.` },
+  { title:'Built for everyone', spot:() => document.querySelector('.sheet'), go(){ S.sheet = { type:'settings' }; },
+    text:() => `Simple words, large text, high contrast and replies read aloud. It never moves money or judges, and is never used for lending.` },
+  { title:'Future You', spot:() => null, go(){ S.sheet = null; S.tab = 'coach'; },
+    text:() => `See the storm. Understand it. Change the future.<br><span style="opacity:.75">An AI coach for the people banks find hardest to serve.</span>` },
+];
+function tourGo(i){
+  i = Math.max(0, Math.min(TOUR.length - 1, i));
+  const playing = S.tour ? S.tour.playing : false;
+  resetAll(); S.instant = true; S.tour = { i, playing };
+  for (let k = 0; k <= i; k++) TOUR[k].go();
+  S.instant = false;
+  render();
+  clearTimeout(tourGo.t);
+  if (S.tour.playing) tourGo.t = setTimeout(() => { if (!S.tour) return; if (S.tour.i < TOUR.length - 1) tourGo(S.tour.i + 1); else { S.tour.playing = false; renderSide(); } }, 9000);
+}
+function tourStart(play){ S.tour = { i:0, playing:!!play }; document.body.classList.add('touring'); tourGo(0); }
+function tourStop(){ clearTimeout(tourGo.t); S.tour = null; document.body.classList.remove('touring'); render(); }
+function applySpot(){
+  document.querySelectorAll('.spot').forEach(e => e.classList.remove('spot'));
+  if (!S.tour) return;
+  const el = TOUR[S.tour.i].spot(); if (!el) return;
+  el.classList.add('spot');
+  const scr = $('#screen');
+  if (scr.contains(el)) { const er = el.getBoundingClientRect(), sr = scr.getBoundingClientRect(), off = er.top - sr.top + scr.scrollTop; scr.scrollTop = er.height > scr.clientHeight - 20 ? off - 10 : off - (scr.clientHeight - er.height) / 2; }
+}
+function tourPanel(){
+  const st = TOUR[S.tour.i], n = TOUR.length, i = S.tour.i;
+  return `<div class="tourpanel" aria-live="polite"><div class="kick">Future You · guided demo</div>
+    <div class="tstep">${i + 1} <span>/ ${n}</span></div><h1 class="ttitle">${esc(st.title)}</h1><p class="ttext">${st.text()}</p>
+    <div class="tbar" aria-hidden="true"><span style="width:${(i + 1) / n * 100}%"></span></div>
+    <div class="tctl"><button class="btn ghost" data-act="tprev" ${i === 0 ? 'disabled' : ''}>← Back</button><button class="btn" data-act="tplay">${S.tour.playing ? '⏸ Pause' : '▶ Play'}</button><button class="btn ghost" data-act="tnext" ${i === n - 1 ? 'disabled' : ''}>Next →</button><button class="btn ghost" data-act="tstop">✕ Exit</button></div>
+    <div class="small" style="margin-top:14px">Keys: → next · ← back · space play/pause · Esc exit. Every number is calculated live.</div></div>`;
+}
+
+// ---------- render + events ----------
+function scrollChat(){ const scr = $('#screen'); scr.scrollTop = scr.scrollHeight; }
+function render(){
+  document.body.style.setProperty('--fs', S.size);
+  document.body.classList.toggle('contrast', S.contrast);
+  document.body.classList.toggle('nomotion', !S.motion);
+  renderTop();
+  $('#screen').innerHTML = ({ coach:viewCoach, forecast:viewForecast, plan:viewPlan })[S.tab]();
+  renderComposer(); renderSheet(); renderSide();
+  if (S.tab === 'coach') scrollChat();
+  if (S.tour) applySpot();
+}
+function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2000); }
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-act]'); if (!t) return;
+  if (t.dataset.tab) { S.tab = t.dataset.tab; render(); if (S.tab !== 'coach') $('#screen').scrollTop = 0; return; }
+  const a = t.dataset.act, v = t.dataset.v, keep = $('#screen').scrollTop;
+  switch (a) {
+    case 'qr': userAsk(v, true); return;
+    case 'tab': S.tab = v; render(); $('#screen').scrollTop = 0; return;
+    case 'fix': S.plan.has(v) ? S.plan.delete(v) : S.plan.add(v); toast(S.plan.has(v) ? `Added: ${SHORT[v]}` : `Removed: ${SHORT[v]}`); if (!S.plan.size) S.shieldOn = false; break;
+    case 'draft': S.sheet = { type:'draft', id:v }; break;
+    case 'shock': userAsk(`What if ${{ bike:'my e-bike breaks', ill:"I'm ill for a week", washer:'my washing machine breaks', ratecut:'the delivery app cuts my pay', rent:'my rent goes up £50' }[v]} next week?`, true); return;
+    case 'shieldon': userAsk('Turn it on', true); return;
+    case 'shieldtoggle': if (t.disabled) return; S.shieldOn = !S.shieldOn; toast(S.shieldOn ? 'Storm Shield on' : 'Storm Shield off'); break;
+    case 'fview': S.fview = v; break;
+    case 'week': S.selWeek = +v; break;
+    case 'askweek': { const w = weeks(S.fview === 'plan' && S.plan.size ? planned() : base())[+v]; S.tab = 'coach'; render(); userAsk(`Why is the week of ${E.fmtDay(w.start)} ${WXW[w.w] === 'clear' ? 'looking fine' : 'risky'}?`, true); return; }
+    case 'settings': S.sheet = { type:'settings' }; break;
+    case 'closesheet': if (t.classList.contains('sheet-bg') && e.target !== t) return; S.sheet = null; break;
+    case 'simple': S.simple = v === '1'; break;
+    case 'size': S.size = +v; break;
+    case 'contrast': S.contrast = !S.contrast; break;
+    case 'motion': S.motion = !S.motion; break;
+    case 'speak': S.speak = !S.speak; break;
+    case 'live': S.live = !S.live; renderComposer(); return;
+    case 'copy': try { navigator.clipboard.writeText(DRAFTS[v]).then(() => toast('Copied. Paste it into an email or text'), () => toast('Select the text to copy it')); } catch (_) { toast('Select the text to copy it'); } return;
+    case 'reset': resetAll(); render(); return;
+    case 'tour': tourStart(false); return;
+    case 'tnext': tourGo(S.tour.i + 1); return;
+    case 'tprev': tourGo(S.tour.i - 1); return;
+    case 'tplay': S.tour.playing = !S.tour.playing; tourGo(S.tour.i); return;
+    case 'tstop': tourStop(); return;
+    default: return;
+  }
+  render(); if (S.tab !== 'coach') $('#screen').scrollTop = keep;
+});
+document.addEventListener('submit', e => { if (e.target.dataset.act === 'send') { e.preventDefault(); const q = $('#q').value; userAsk(q, false); } });
+document.addEventListener('keydown', e => {
+  if (S.tour && !(e.target && e.target.tagName === 'INPUT')) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); tourGo(S.tour.i + 1); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); tourGo(S.tour.i - 1); return; }
+    if (e.key === ' ') { e.preventDefault(); S.tour.playing = !S.tour.playing; tourGo(S.tour.i); return; }
+    if (e.key === 'Escape') { tourStop(); return; }
+  }
+  if (e.key === 'Escape' && S.sheet) { S.sheet = null; render(); }
+});
+window.__tour = { start:tourStart, go:tourGo, stop:tourStop, n:() => TOUR.length };
+window.__ask = (q, chip) => userAsk(q, chip);
+render();
+if (location.hash === '#tour') tourStart(false);
+})();
+</script>
+</body>
+</html>
