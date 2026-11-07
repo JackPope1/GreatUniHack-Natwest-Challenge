@@ -37,4 +37,4 @@ Open `index.html` in Chrome or Edge, or use the live demo link above. There's no
 It shows how sure it is, explains every prediction, never moves money on its own, is never used for lending decisions, and points to free debt advice (StepChange, Citizens Advice, MoneyHelper) without judgement.
 
 ---
-*Prototype built at GreatUniHack 2026 by [team name]. All people, companies and figures are synthetic, and the Universal Credit model is simplified.*
+*Prototype built at GreatUniHack 2026 by ManHack. All people, companies and figures are synthetic, and the Universal Credit model is simplified.*
