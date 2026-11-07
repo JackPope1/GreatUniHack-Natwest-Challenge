@@ -8,7 +8,7 @@
 ---
 
 ## The problem
-Jane is a delivery rider and single mum on Universal Credit. Today she has £214 and feels fine. In nine weeks she'll be about £450 short.
+Jane is a delivery rider and single mum on Universal Credit. Today she has £214 and feels fine. In nine weeks she'll be about £450 short .
 
 She isn't overspending. Her problem is **timing**: rent leaves on the 1st, Universal Credit arrives on the 16th, and a busy December cuts her next UC payment. Banking apps only show what already happened.
 
